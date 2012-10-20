@@ -6,11 +6,11 @@ Joins a node to an Active Directory domain using Likewise Open.
 
     node 'workstation' {
       class { 'likewise': 
-        $domain           => 'ads.example.org',
-        $bindUsername     => 'admin',
-        $bindPassword     => 'password',
-        $ou               => 'ou=Computers,ou=Department,ou=Divison',
-        $userDomainPrefix => 'ADS',
+        ADdomain         => 'ads.example.org',
+        bindUsername     => 'admin',
+        bindPassword     => 'password',
+        ou               => 'ou=Computers,ou=Department,ou=Divison',
+        userDomainPrefix => 'ADS',
       }
     }
 
