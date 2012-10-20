@@ -1,15 +1,15 @@
 class likewise (
-  $domain,
+  $ADdomain,
   $bindUsername,
-  $bindPassword        = hiera('bindPassword'),
-  $ou                  = ''
-  $userDomainPrefix    = '',
+  $bindPassword,
+  $ou = undef,
+  $userDomainPrefix = undef,
   $assumeDefaultDomain = true,
   ) {
 
   # Likewise Open is not packaged for Red Hat, Fedora, or CentOS
   if $osfamily != 'Debian' {
-    fail('This module is currently only supported on Debian and derivatives.')
+    fail('Module ${modulename} is not supported on ${operatingsystem}.')
   }
   
   package { 'likewise-open':
@@ -17,11 +17,11 @@ class likewise (
   }
 
   service { 'lsassd':
-    ensure      => running,
-    enable      => true,
-    hasrestart  => true,
-    hasstatus   => true,
-    require     => Package['likewise-open'],
+    ensure     => running,
+    enable     => true,
+    hasrestart => true,
+    hasstatus  => true,
+    require    => Package['likewise-open'],
   }
   
   $options = ''
@@ -42,7 +42,7 @@ class likewise (
   
   exec { 'join_domain':
     path    => ['/usr/bin'],
-    command => "domainjoin-cli join ${options} ${domain} ${bindUsername} ${bindPassword}",
+    command => "domainjoin-cli join ${options} ${ADdomain} ${bindUsername} ${bindPassword}",
     require => Service['lsassd'],
   }
 }
