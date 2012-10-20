@@ -1,5 +1,5 @@
 class likewise (
-  $ADdomain,
+  $adDomain,
   $bindUsername,
   $bindPassword,
   $ou = undef,
@@ -24,25 +24,34 @@ class likewise (
     require    => Package['likewise-open'],
   }
   
-  $options = ''
-  
+  # Construct the domainjoin-cli options string
   if $ou {
     $likewiseOU = getOU($ou)
-    $options += '--ou ${likewiseOU} '
-  }
-  if $userDomainPrefix {
-    $options += '--userDomainPrefix ${userDomainPrefix} '
-  }
-  if $assumeDefaultDomain == true {
-    $options += '--assumeDefaultDomain yes '
+    $optionOU = "--ou ${likewiseOU}"
   }
   else {
-    $options += '--assumeDefaultDomain no '
+    $optionOU = ''
+  }
+  if $userDomainPrefix {
+    $optionPrefix = "--userDomainPrefix ${userDomainPrefix}"
+  }
+  else {
+    $optionPrefix = ''
+  }
+  if $assumeDefaultDomain == true {
+    $optionAssume = "--assumeDefaultDomain yes"
+  }
+  else {
+    $optionAssume = "--assumeDefaultDomain no"
   }
   
+  $options = "${optionOU} ${optionPrefix} ${optionAssume}"
+  
+  # Join the AD domain
   exec { 'join_domain':
     path    => ['/usr/bin'],
-    command => "domainjoin-cli join ${options} ${ADdomain} ${bindUsername} ${bindPassword}",
+    command => "domainjoin-cli join ${options} ${adDomain} ${bindUsername} ${bindPassword}",
     require => Service['lsassd'],
   }
+  
 }

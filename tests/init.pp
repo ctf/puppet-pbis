@@ -1,5 +1,5 @@
 class { 'likewise':
-  ADdomain         => 'ads.example.org',
+  adDomain         => 'ads.example.org',
   bindUsername     => 'admin',
   bindPassword     => 'password',
   ou               => 'ou=Computers,ou=Department,ou=Divison',
