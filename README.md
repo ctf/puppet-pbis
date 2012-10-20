@@ -2,7 +2,24 @@
 
 Joins a node to an Active Directory domain using Likewise Open.
 
-This module is being developed against Puppet 2.7.
+## Usage
+
+    node 'workstation' {
+      class { 'likewise': 
+        $domain           => 'ads.example.org',
+        $bindUsername     => 'admin',
+        $bindPassword     => 'password',
+        $ou               => 'ou=Computers,ou=Department,ou=Divison',
+        $userDomainPrefix => 'ADS',
+      }
+    }
+
+## Environment
+
+This module is being developed against:
+
+  * Puppet 2.7.19
+  * Facter 1.6.13
 
 ## Supported platforms
 
