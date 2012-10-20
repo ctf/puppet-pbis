@@ -1,0 +1,7 @@
+name    'benwebber-likewise'
+version '0.1.0'
+author 'Ben Webber'
+license 'GNU GPLv3'
+summary 'Joins a node to an Active Directory domain using Likewise Open.'
+description 'This module provides a class to deploy and configure Likewise Open. Currently only supported on Debian family systems. The AD bind password is stored in Hiera using hiera-gpg (<https://github.com/crayfishx/hiera-gpg>).'
+project_page 'http://github.com/benwebber/puppet-likewise'
