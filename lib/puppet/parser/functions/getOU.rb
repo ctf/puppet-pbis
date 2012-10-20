@@ -5,7 +5,8 @@ module Puppet::Parser::Functions
     # e.g. ou=Computers,ou=Department,ou=Division
     ou = args[0]
     # Convert to ['Divison', 'Department', 'Computers']
-    ou.gsub('ou=','')
+    ou = ou.gsub('ou=','')
+    ou = ou.split(',')
     ou = ou.reverse()
     # Convert to an OU 'path'
     ou.join('/')
