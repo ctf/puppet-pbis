@@ -24,36 +24,37 @@ class likewise (
     require    => Package['likewise-open'],
   }
   
-  # Construct the domainjoin-cli options string
-  if $ou {
-    $likewiseOU = getOU($ou)
-    $optionOU = "--ou ${likewiseOU}"
-  }
-  else {
-    $optionOU = ''
-  }
-  if $userDomainPrefix {
-    $optionPrefix = "--userDomainPrefix ${userDomainPrefix}"
-  }
-  else {
-    $optionPrefix = ''
-  }
-  if $assumeDefaultDomain == true {
-    $optionAssume = "--assumeDefaultDomain yes"
-  }
-  else {
-    $optionAssume = "--assumeDefaultDomain no"
-  }
-  
-  $options = "${optionOU} ${optionPrefix} ${optionAssume}"
-  
   # Join the machine if it is not already on the domain.
   if $adDomain != $domain {
+    # Construct the domainjoin-cli options string
+    if $ou {
+      $likewiseOU = getOU($ou)
+      $optionOU = "--ou ${likewiseOU}"
+    }
+    else {
+      $optionOU = ''
+    }
+    if $userDomainPrefix {
+      $optionPrefix = "--userDomainPrefix ${userDomainPrefix}"
+    }
+    else {
+      $optionPrefix = ''
+    }
+    if $assumeDefaultDomain == true {
+      $optionAssume = "--assumeDefaultDomain yes"
+    }
+    else {
+      $optionAssume = "--assumeDefaultDomain no"
+    }
+    
+    $options = "${optionOU} ${optionPrefix} ${optionAssume}"
+    
     exec { 'join_domain':
       path    => ['/usr/bin'],
       command => "domainjoin-cli join ${options} ${adDomain} ${bindUsername} ${bindPassword}",
       require => Service['lsassd'],
     }
+    
     # Update DNS
     exec { 'update_DNS':
       path    => ['/usr/bin'],
