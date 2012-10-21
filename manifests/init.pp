@@ -47,11 +47,18 @@ class likewise (
   
   $options = "${optionOU} ${optionPrefix} ${optionAssume}"
   
-  # Join the AD domain
-  exec { 'join_domain':
-    path    => ['/usr/bin'],
-    command => "domainjoin-cli join ${options} ${adDomain} ${bindUsername} ${bindPassword}",
-    require => Service['lsassd'],
+  # Join the machine if it is not already on the domain.
+  if $adDomain != $domain {
+    exec { 'join_domain':
+      path    => ['/usr/bin'],
+      command => "domainjoin-cli join ${options} ${adDomain} ${bindUsername} ${bindPassword}",
+      require => Service['lsassd'],
+    }
+    # Update DNS
+    exec { 'update_DNS':
+      path    => ['/usr/bin'],
+      command => "lw-update-dns",
+      require => Exec['join_domain'],
+    }
   }
-  
 }
