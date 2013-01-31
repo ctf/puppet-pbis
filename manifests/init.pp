@@ -1,4 +1,4 @@
-class likewise (
+class pbis (
   $adDomain,
   $bindUsername,
   $bindPassword,
@@ -7,29 +7,29 @@ class likewise (
   $assumeDefaultDomain = true,
   ) {
 
-  # Likewise Open is not packaged for Red Hat, Fedora, or CentOS
+  # PowerBroker Identity Services – Open Edition is not packaged for Red Hat, Fedora, or CentOS
   if $osfamily != 'Debian' {
     fail('Module ${modulename} is not supported on ${operatingsystem}.')
   }
   
-  package { 'likewise-open':
+  package { 'pbis-open':
     ensure => latest,
   }
 
-  service { 'lsassd':
+  service { 'lwsmd':
     ensure     => running,
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => Package['likewise-open'],
+    require    => Package['pbis-open'],
   }
   
   # Join the machine if it is not already on the domain.
   if $adDomain != $domain {
     # Construct the domainjoin-cli options string
     if $ou {
-      $likewiseOU = getOU($ou)
-      $optionOU = "--ou ${likewiseOU}"
+      $pbisOU = getOU($ou)
+      $optionOU = "--ou ${pbisOU}"
     }
     else {
       $optionOU = ''
@@ -52,13 +52,13 @@ class likewise (
     exec { 'join_domain':
       path    => ['/usr/bin'],
       command => "domainjoin-cli join ${options} ${adDomain} ${bindUsername} ${bindPassword}",
-      require => Service['lsassd'],
+      require => Service['lwsmd'],
     }
     
     # Update DNS
     exec { 'update_DNS':
-      path    => ['/usr/bin'],
-      command => "lw-update-dns",
+      path    => ['/opt/pbis/bin'],
+      command => "update-dns",
       require => Exec['join_domain'],
     }
   }
