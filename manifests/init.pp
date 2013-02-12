@@ -5,6 +5,7 @@ class pbis (
   $ou = undef,
   $userDomainPrefix = undef,
   $assumeDefaultDomain = true,
+  $disable = undef,
   ) {
 
   # PowerBroker Identity Services – Open Edition is not packaged for Red Hat, Fedora, or CentOS
@@ -46,8 +47,14 @@ class pbis (
     else {
       $optionAssume = "--assumeDefaultDomain no"
     }
+    if $disable {
+      $optionDisable = "--disable ${$disable}"
+    }
+    else {
+      $optionDisable = ""
+    }
     
-    $options = "${optionOU} ${optionPrefix} ${optionAssume}"
+    $options = "${optionOU} ${optionPrefix} ${optionAssume} ${optionDisable}"
     
     exec { 'join_domain':
       path    => ['/usr/bin'],
