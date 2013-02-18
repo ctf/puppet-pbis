@@ -1,4 +1,4 @@
-# puppet-likewise
+# puppet-pbis
 
 Joins a node to an Active Directory domain using PowerBroker Identity Services Open Edition.
 
@@ -18,8 +18,8 @@ Joins a node to an Active Directory domain using PowerBroker Identity Services O
 
 This module is being developed against:
 
-  * Puppet 2.7.19
-  * Facter 1.6.13
+  * Puppet 2.6.2
+  * Facter 1.6.9
 
 ## Supported platforms
 
