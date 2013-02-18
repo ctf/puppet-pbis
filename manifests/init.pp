@@ -69,4 +69,30 @@ class pbis (
     require => Exec['join_domain'],
     returns => [0, 204],
   }
+
+  # Configure PBIS
+  file { "/etc/pbis/configSettings":
+    ensure => file,
+    owner  => root,
+    group  => root,
+    mode   => 644,
+    content => template("pbis/configSettings.erb"),
+    require => Exec["join_domain"],                                                                                                                               
+    notify => Exec[clearCache],
+  }
+
+  exec { 'pbisConfig':
+    path    => ['/opt/pbis/bin'],
+    command => "/opt/pbis/bin/config --file /etc/pbis/configSettings",
+    subscribe   => File["/etc/pbis/configSettings"],
+    refreshonly => true,
+  }
+
+  exec { 'clearCache':
+    path    => ['/opt/pbis/bin'],
+    command => "/opt/pbis/bin/ad-cache --delete-all",
+    subscribe   => Exec["pbisConfig"],
+    refreshonly => true,
+  }
+ 
 }
