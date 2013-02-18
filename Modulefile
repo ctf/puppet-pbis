@@ -1,5 +1,5 @@
-name    'philipchase-pbis'
-version '0.1.0'
+name    'puppet-pbis'
+version '0.2.0'
 author 'Philip B Chase'
 license 'GNU GPLv3'
 summary 'Joins a node to an Active Directory domain using PowerBroker Identity Services Open Edition.'
