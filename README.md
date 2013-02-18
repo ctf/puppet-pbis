@@ -1,11 +1,11 @@
-# puppet-likewise
+# puppet-pbis
 
-Joins a node to an Active Directory domain using Likewise Open.
+Joins a node to an Active Directory domain using PowerBroker Identity Services Open Edition.
 
 ## Usage
 
     node 'workstation' {
-      class { 'likewise': 
+      class { 'pbis': 
         adDomain         => 'ads.example.org',
         bindUsername     => 'admin',
         bindPassword     => 'password',
@@ -18,9 +18,9 @@ Joins a node to an Active Directory domain using Likewise Open.
 
 This module is being developed against:
 
-  * Puppet 2.7.19
-  * Facter 1.6.13
+  * Puppet 2.6.2
+  * Facter 1.6.9
 
 ## Supported platforms
 
-For now, only the Debian family is supported. Other operating systems which provide a Likewise Open package will be added.
+For now, only the Debian family is supported. Other operating systems which provide a PBIS Open package will be added.

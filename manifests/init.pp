@@ -1,65 +1,98 @@
-class likewise (
+class pbis (
   $adDomain,
   $bindUsername,
   $bindPassword,
   $ou = undef,
   $userDomainPrefix = undef,
   $assumeDefaultDomain = true,
+  $disable = undef
   ) {
 
-  # Likewise Open is not packaged for Red Hat, Fedora, or CentOS
+  # PowerBroker Identity Services – Open Edition is not packaged for Red Hat, Fedora, or CentOS
   if $osfamily != 'Debian' {
     fail('Module ${modulename} is not supported on ${operatingsystem}.')
   }
   
-  package { 'likewise-open':
+  package { 'pbis-open':
     ensure => latest,
   }
 
-  service { 'lsassd':
+  service { 'lwsmd':
     ensure     => running,
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => Package['likewise-open'],
+    require    => Package['pbis-open'],
   }
   
-  # Join the machine if it is not already on the domain.
-  if $adDomain != $domain {
-    # Construct the domainjoin-cli options string
-    if $ou {
-      $likewiseOU = getOU($ou)
-      $optionOU = "--ou ${likewiseOU}"
-    }
-    else {
-      $optionOU = ''
-    }
-    if $userDomainPrefix {
-      $optionPrefix = "--userDomainPrefix ${userDomainPrefix}"
-    }
-    else {
-      $optionPrefix = ''
-    }
-    if $assumeDefaultDomain == true {
-      $optionAssume = "--assumeDefaultDomain yes"
-    }
-    else {
-      $optionAssume = "--assumeDefaultDomain no"
-    }
-    
-    $options = "${optionOU} ${optionPrefix} ${optionAssume}"
-    
-    exec { 'join_domain':
-      path    => ['/usr/bin'],
-      command => "domainjoin-cli join ${options} ${adDomain} ${bindUsername} ${bindPassword}",
-      require => Service['lsassd'],
-    }
-    
-    # Update DNS
-    exec { 'update_DNS':
-      path    => ['/usr/bin'],
-      command => "lw-update-dns",
-      require => Exec['join_domain'],
-    }
+  # Construct the domainjoin-cli options string
+  if $ou {
+    $pbisOU = getOU($ou)
+    $optionOU = "--ou ${pbisOU}"
   }
+  else {
+    $optionOU = ''
+  }
+  if $userDomainPrefix {
+    $optionPrefix = "--userDomainPrefix ${userDomainPrefix}"
+  }
+  else {
+    $optionPrefix = ''
+  }
+  if $assumeDefaultDomain == true {
+    $optionAssume = "--assumeDefaultDomain yes"
+  }
+  else {
+    $optionAssume = "--assumeDefaultDomain no"
+  }
+  if $disable {
+    $optionDisable = "--disable ${disable}"
+  }
+  else {
+    $optionDisable = ""
+  }
+    
+  $options = "${optionOU} ${optionPrefix} ${optionAssume} ${optionDisable}"
+    
+  # Join the machine if it is not already on the domain.
+  exec { 'join_domain':
+    path    => ['/usr/bin', '/bin'],
+    command => "domainjoin-cli join ${options} ${adDomain} ${bindUsername} ${bindPassword}",
+    require => Service['lwsmd'],
+    unless => "/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null | grep 'NetBIOS Domain Name'",
+  }
+
+  # Update DNS
+  exec { 'update_DNS':
+    path    => ['/opt/pbis/bin'],
+    command => "/opt/pbis/bin/update-dns",
+    require => Exec['join_domain'],
+    returns => [0, 204],
+  }
+
+  # Configure PBIS
+  file { "/etc/pbis/configSettings":
+    ensure => file,
+    owner  => root,
+    group  => root,
+    mode   => 644,
+    content => template("pbis/configSettings.erb"),
+    require => Exec["join_domain"],                                                                                                                               
+    notify => Exec[clearCache],
+  }
+
+  exec { 'pbisConfig':
+    path    => ['/opt/pbis/bin'],
+    command => "/opt/pbis/bin/config --file /etc/pbis/configSettings",
+    subscribe   => File["/etc/pbis/configSettings"],
+    refreshonly => true,
+  }
+
+  exec { 'clearCache':
+    path    => ['/opt/pbis/bin'],
+    command => "/opt/pbis/bin/ad-cache --delete-all",
+    subscribe   => Exec["pbisConfig"],
+    refreshonly => true,
+  }
+ 
 }

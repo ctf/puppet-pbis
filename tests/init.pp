@@ -1,4 +1,4 @@
-class { 'likewise':
+class { 'pbis':
   adDomain         => 'ads.example.org',
   bindUsername     => 'admin',
   bindPassword     => 'password',
