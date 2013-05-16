@@ -29,11 +29,11 @@ class pbis::params {
   $package = $::osfamily ? {
     'Debian'          => "${package_name}.deb",
     '/(RedHat|Suse)/' => "${package_name}.rpm",
-    default           => "Unsupported operating system: ${::operatingsystem}.",
+    default           => fail("Unsupported operating system: ${::operatingsystem}."),
   }
   $package_provider = $::osfamily ? {
     'Debian'          => 'dpkg',
     '/(RedHat|Suse)/' => 'rpm',
-    default           => "Unsupported operating system: ${::operatingsystem}.",
+    default           => fail("Unsupported operating system: ${::operatingsystem}."),
   }
 }

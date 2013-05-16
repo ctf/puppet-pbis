@@ -23,7 +23,7 @@ class pbis (
   # a low-performance repo for the poor man
   file { "/opt/${package}":
     ensure  => file,
-    source  => "puppet:///modules/pbis/files/${package}",
+    source  => "puppet:///modules/pbis/${package}",
   }
 
   package { 'pbis-open':
@@ -35,7 +35,6 @@ class pbis (
 
   service { 'lsass':
     ensure     => running,
-    enable     => true,
     restart    => '/opt/pbis/bin/lwsm restart lsass',
     start      => '/opt/pbis/bin/lwsm start lsass',
     stop       => '/opt/pbis/bin/lwsm stop lsass',
