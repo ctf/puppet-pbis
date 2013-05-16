@@ -1,20 +1,26 @@
 class pbis (
-  $adDomain,
-  $bindUsername,
-  $bindPassword,
-  $ou = undef,
-  $userDomainPrefix = undef,
-  $assumeDefaultDomain = true,
-  $disable = undef
-  ) {
+  $ad_domain,
+  $bind_username,
+  $bind_password,
+  $ou                    = $pbis::params::ou,
+  $user_domain_prefix    = $pbis::params::user_domain_prefix,
+  $assume_default_domain = $pbis::params::assume_default_domain,
+  $enabled_modules       = $pbis::params::enabled_modules,
+  $disabled_modules      = $pbis::params::disabled_modules,
+  $package               = $pbis::params::package,
+  ) inherits pbis::params {
 
-  # PowerBroker Identity Services – Open Edition is not packaged for Red Hat, Fedora, or CentOS
-  if $osfamily != 'Debian' {
-    fail('Module ${modulename} is not supported on ${operatingsystem}.')
+  # Download and install the package from the puppetmaster...
+  # a low-performance repo for the poor man
+  file { "/opt/${package}":
+    ensure  => file,
+    source  => "puppet:///modules/pbis/files/${package}",
   }
-  
+
   package { 'pbis-open':
-    ensure => latest,
+    ensure  => installed,
+    source  => "/opt/${package}",
+    require => File["/opt/${package}"],
   }
 
   service { 'lwsmd':
@@ -24,7 +30,7 @@ class pbis (
     hasstatus  => true,
     require    => Package['pbis-open'],
   }
-  
+
   # Construct the domainjoin-cli options string
   if $ou {
     $pbisOU = getOU($ou)
@@ -33,66 +39,66 @@ class pbis (
   else {
     $optionOU = ''
   }
-  if $userDomainPrefix {
-    $optionPrefix = "--userDomainPrefix ${userDomainPrefix}"
+  if $user_domain_prefix {
+    $optionPrefix = "--userDomainPrefix ${user_domain_prefix}"
   }
   else {
     $optionPrefix = ''
   }
-  if $assumeDefaultDomain == true {
-    $optionAssume = "--assumeDefaultDomain yes"
+  if $assume_default_domain == true {
+    $optionAssume = '--assumeDefaultDomain yes'
   }
   else {
-    $optionAssume = "--assumeDefaultDomain no"
+    $optionAssume = '--assumeDefaultDomain no'
   }
-  if $disable {
-    $optionDisable = "--disable ${disable}"
+  if $disabled_modules {
+    $optionDisable = "--disable ${disabled_modules}"
   }
   else {
-    $optionDisable = ""
+    $optionDisable = ''
   }
-    
+
   $options = "${optionOU} ${optionPrefix} ${optionAssume} ${optionDisable}"
-    
+
   # Join the machine if it is not already on the domain.
   exec { 'join_domain':
     path    => ['/usr/bin', '/bin'],
-    command => "domainjoin-cli join ${options} ${adDomain} ${bindUsername} ${bindPassword}",
+    command => "domainjoin-cli join ${options} ${ad_domain} ${bind_username} ${bind_password}",
     require => Service['lwsmd'],
-    unless => "/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null | grep 'NetBIOS Domain Name'",
+    unless  => '/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null | grep "NetBIOS Domain Name"',
   }
 
   # Update DNS
   exec { 'update_DNS':
     path    => ['/opt/pbis/bin'],
-    command => "/opt/pbis/bin/update-dns",
+    command => '/opt/pbis/bin/update-dns',
     require => Exec['join_domain'],
     returns => [0, 204],
   }
 
   # Configure PBIS
-  file { "/etc/pbis/configSettings":
-    ensure => file,
-    owner  => root,
-    group  => root,
-    mode   => 644,
-    content => template("pbis/configSettings.erb"),
-    require => Exec["join_domain"],                                                                                                                               
-    notify => Exec[clearCache],
+  file { '/etc/pbis/configSettings':
+    ensure  => file,
+    owner   => root,
+    group   => root,
+    mode    => '0644',
+    content => template('pbis/configSettings.erb'),
+    require => Exec['join_domain'],
+    notify  => Exec[clearCache],
   }
 
   exec { 'pbisConfig':
-    path    => ['/opt/pbis/bin'],
-    command => "/opt/pbis/bin/config --file /etc/pbis/configSettings",
-    subscribe   => File["/etc/pbis/configSettings"],
+    path        => ['/opt/pbis/bin'],
+    command     => '/opt/pbis/bin/config --file /etc/pbis/configSettings',
+    subscribe   => File['/etc/pbis/configSettings'],
     refreshonly => true,
   }
 
   exec { 'clearCache':
-    path    => ['/opt/pbis/bin'],
-    command => "/opt/pbis/bin/ad-cache --delete-all",
-    subscribe   => Exec["pbisConfig"],
+    path        => ['/opt/pbis/bin'],
+    command     => '/opt/pbis/bin/ad-cache --delete-all',
+    subscribe   => Exec['pbisConfig'],
     refreshonly => true,
   }
- 
+
 }
