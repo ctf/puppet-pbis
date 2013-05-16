@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 module Puppet::Parser::Functions
-  newfunction(:getOU, :type => :rvalue) do |args|
+  newfunction(:transform_ou, :type => :rvalue) do |args|
     # e.g. ou=Computers,ou=Department,ou=Division
     ou = args[0]
     # Convert to ['Divison', 'Department', 'Computers']
