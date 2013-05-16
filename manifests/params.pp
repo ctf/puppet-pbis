@@ -31,4 +31,9 @@ class pbis::params {
     '/(RedHat|Suse)/' => "pbis-open-${pbis_release}-${pbis_revision}.${::architecture}.rpm",
     default           => "Unsupported operating system: ${::operatingsystem}.",
   }
+  $package_provider = $::osfamily ? {
+    'Debian'          => 'dpkg',
+    '/(RedHat|Suse)/' => 'rpm',
+    default           => "Unsupported operating system: ${::operatingsystem}.",
+  }
 }

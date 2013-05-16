@@ -6,6 +6,7 @@ class pbis (
   $enabled_modules       = $pbis::params::enabled_modules,
   $disabled_modules      = $pbis::params::disabled_modules,
   $package               = $pbis::params::package,
+  $package_provider      = $pbis::params::package_provider,
   $assume_default_domain = $pbis::params::assume_default_domain,
   $create_home_dir       = $pbis::params::create_home_dir,
   $domain_separator      = $pbis::params::domain_separator,
@@ -26,9 +27,10 @@ class pbis (
   }
 
   package { 'pbis-open':
-    ensure  => installed,
-    source  => "/opt/${package}",
-    require => File["/opt/${package}"],
+    ensure   => installed,
+    source   => "/opt/${package}",
+    provider => $package_provider,
+    require  => File["/opt/${package}"],
   }
 
   service { 'lsass':
