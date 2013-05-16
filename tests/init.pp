@@ -1,7 +1,7 @@
 class { 'pbis':
-  adDomain         => 'ads.example.org',
-  bindUsername     => 'admin',
-  bindPassword     => 'password',
-  ou               => 'ou=Computers,ou=Department,ou=Divison',
-  userDomainPrefix => 'ADS',
+  $ad_domain             => 'ads.example.org',
+  $bind_username         => 'admin',
+  $bind_password         => 'password',
+  $ou                    => 'ou=Computers,ou=Department,ou=Divison',
+  $user_domain_prefix    => 'ADS',
 }
