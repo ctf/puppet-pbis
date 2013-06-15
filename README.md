@@ -4,28 +4,51 @@ Joins a node to an Active Directory domain using PowerBroker Identity Services O
 
 ## Usage
 
-1. Download PBIS from the [BeyondTrust website](www.beyondtrust.com/Technical-Support/Downloads/PowerBroker-Identity-Services-Open-Edition/?Pass=True).
-2. Extract the `.rpm` or `.deb` file from the self-extracting `sh` archive.
-3. Rename the files according to the following convention:
+    node 'workstation' {
+      class { 'pbis': 
+        ad_domain          => 'ads.example.org',
+        bind_username      => 'admin',
+        bind_password      => 'password',
+        ou                 => 'ou=Computers,ou=Department,ou=Divison',
+        user_domain_prefix => 'ADS',
+      }
+    }
 
-        pbis-open.amd64.deb
-        pbis-open.i386.deb
-    
-        pbis-open.x86_64.rpm
-        pbis-open.i386.rpm
-    
-  and place them in the module's `files/` folder.
-4. Apply the class to a node. See `manifests/init.pp` for more options.
+## Distributing PBIS Open packages
 
-        node 'workstation' {
-          class { 'pbis': 
-            ad_domain          => 'ads.example.org',
-            bind_username      => 'admin',
-            bind_password      => 'password',
-            ou                 => 'ou=Computers,ou=Department,ou=Divison',
-            user_domain_prefix => 'ADS',
-          }
-        }
+This module supports two ways of distributing the PBIS Open packages:
+
+1. using Puppet's built-in fileserver, and
+2. as `package` resources using an external repository.
+
+The default is to use Puppet's built-in fileserver.
+
+In either case, download the necessary packages from the [BeyondTrust website](www.beyondtrust.com/Technical-Support/Downloads/PowerBroker-Identity-Services-Open-Edition/?Pass=True). Extract the architecture-specific `pbis-open` `.rpm` or `.deb` file from the self-extracting `sh` archive.
+
+### Using Puppet's built-in fileserver
+
+Rename the `pbis-open` package files according to the following convention:
+
+    pbis-open.amd64.deb
+    pbis-open.i386.deb
+
+    pbis-open.x86_64.rpm
+    pbis-open.i386.rpm
+    
+and place them in the module's `files/` folder.
+
+### Using an external repository
+
+For scalability, or if you are using variable module paths, you may want to add the PBIS Open packages to a local `apt` or `yum` repository.
+
+In that case, include the class with `use_repository => true`.
+
+    node 'workstation' {
+      class { 'pbis':
+        ...
+        use_repository => true,
+      }
+    }
 
 ## Dependencies
 

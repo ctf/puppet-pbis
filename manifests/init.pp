@@ -6,7 +6,8 @@ class pbis (
   $enabled_modules       = $pbis::params::enabled_modules,
   $disabled_modules      = $pbis::params::disabled_modules,
   $package               = $pbis::params::package,
-  $package_provider      = $pbis::params::package_provider,
+  $package_file          = $pbis::params::package_file,
+  $package_file_provider = $pbis::params::package_file_provider,
   $assume_default_domain = $pbis::params::assume_default_domain,
   $create_home_dir       = $pbis::params::create_home_dir,
   $domain_separator      = $pbis::params::domain_separator,
@@ -17,20 +18,31 @@ class pbis (
   $login_shell_template  = $pbis::params::login_shell_template,
   $skeleton_dirs         = $pbis::params::skeleton_dirs,
   $user_domain_prefix    = $pbis::params::user_domain_prefix,
+  $use_repository        = $pbis::params::use_repository,
   ) inherits pbis::params {
 
-  # Download and install the package from the puppetmaster...
-  # a low-performance repo for the poor man
-  file { "/opt/${package}":
-    ensure  => file,
-    source  => "puppet:///modules/pbis/${package}",
+  if $use_repository == true {
+    # If the package is on an external repo, install it normally.
+    package { $package:
+      ensure => installed,
+    }
   }
-
-  package { 'pbis-open':
-    ensure   => installed,
-    source   => "/opt/${package}",
-    provider => $package_provider,
-    require  => File["/opt/${package}"],
+  elsif $use_repository == false {
+    # Otherwise, download and install the package from the puppetmaster...
+    # a low-performance repo for the poor man
+    file { "/opt/${package_file}":
+      ensure  => file,
+      source  => "puppet:///modules/pbis/${package_file}",
+    }
+    package { $package:
+      ensure   => installed,
+      source   => "/opt/${package_file}",
+      provider => $package_file_provider,
+      require  => File["/opt/${package}"],
+    }
+  }
+  else {
+    fail("Invalid input for use_repository: ${use_repository}.")
   }
 
   service { 'lsass':
@@ -39,7 +51,7 @@ class pbis (
     start      => '/opt/pbis/bin/lwsm start lsass',
     stop       => '/opt/pbis/bin/lwsm stop lsass',
     status     => '/opt/pbis/bin/lwsm status lsass',
-    require    => Package['pbis-open'],
+    require    => Package[$package],
   }
 
   # Construct the domainjoin-cli options string
@@ -109,5 +121,4 @@ class pbis (
     subscribe   => Exec['configure_pbis'],
     refreshonly => true,
   }
-
 }
