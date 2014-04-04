@@ -8,3 +8,4 @@ HomeDirUmask "<%= home_dir_umask -%>"
 LoginShellTemplate "<%= login_shell_template -%>"
 SkeletonDirs "<%= skeleton_dirs -%>"
 UserDomainPrefix "<%= user_domain_prefix -%>"
+<% if require_membership_of != "false" %>RequireMembershipOf "<%= require_membership_of -%>"<% end %>
