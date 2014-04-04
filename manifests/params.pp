@@ -3,6 +3,7 @@ class pbis::params {
   # package options
   $use_repository        = false
   $package               = 'pbis-open'
+  $service_name          = 'lsass'
 
   # domainjoin-cli options
   $ou                    = undef

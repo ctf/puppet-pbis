@@ -8,6 +8,7 @@ class pbis (
   $package               = $pbis::params::package,
   $package_file          = $pbis::params::package_file,
   $package_file_provider = $pbis::params::package_file_provider,
+  $service_name          = $pbis::params::service_name,
   $assume_default_domain = $pbis::params::assume_default_domain,
   $create_home_dir       = $pbis::params::create_home_dir,
   $domain_separator      = $pbis::params::domain_separator,
@@ -45,7 +46,7 @@ class pbis (
     fail("Invalid input for use_repository: ${use_repository}.")
   }
 
-  service { 'lsass':
+  service { $service_name:
     ensure     => running,
     restart    => '/opt/pbis/bin/lwsm restart lsass',
     start      => '/opt/pbis/bin/lwsm start lsass',
@@ -82,7 +83,7 @@ class pbis (
   exec { 'join_domain':
     path    => ['/bin', '/usr/bin', '/opt/pbis/bin'],
     command => "domainjoin-cli join ${options} ${ad_domain} ${bind_username} ${bind_password}",
-    require => Service['lsass'],
+    require => Service[$service_name],
     unless  => 'lsa ad-get-machine account 2> /dev/null | grep "NetBIOS Domain Name"',
   }
 
