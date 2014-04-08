@@ -19,7 +19,7 @@ class pbis::params {
   $home_dir_umask        = '022'
   $home_dir_template     = '%H/%D/%U'
   $login_shell_template  = '/bin/bash'
-  $require_membership_of = false
+  $require_membership_of = undef
   $skeleton_dirs         = '/etc/skel'
   $user_domain_prefix    = undef
 
