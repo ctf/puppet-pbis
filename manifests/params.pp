@@ -3,6 +3,7 @@ class pbis::params {
   # package options
   $use_repository        = false
   $package               = 'pbis-open'
+  $service_name          = 'lsass'
 
   # domainjoin-cli options
   $ou                    = undef
@@ -18,6 +19,7 @@ class pbis::params {
   $home_dir_umask        = '022'
   $home_dir_template     = '%H/%D/%U'
   $login_shell_template  = '/bin/bash'
+  $require_membership_of = undef
   $skeleton_dirs         = '/etc/skel'
   $user_domain_prefix    = undef
 
