@@ -40,7 +40,7 @@ class pbis (
       ensure   => installed,
       source   => "/opt/${package_file}",
       provider => $package_file_provider,
-      require  => File["/opt/${package}"],
+      require  => File["/opt/${package_file}"],
     }
   }
   else {
