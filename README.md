@@ -32,9 +32,13 @@ Rename the `pbis-open` package files according to the following convention:
 
     pbis-open.amd64.deb
     pbis-open.i386.deb
+    pbis-open-upgrade.amd64.deb
+    pbis-open-upgrade.i386.deb
 
     pbis-open.x86_64.rpm
     pbis-open.i386.rpm
+    pbis-open-upgrade.x86_64.rpm
+    pbis-open-upgrade.i386.rpm
     
 and place them in the module's `files/` folder.
 
@@ -59,6 +63,17 @@ The service name may not be 'lsass' on newer version of PBIS and may be 'lwsmd'.
       class { 'pbis':
         ...
         service_name => 'lwsmd',
+      }
+    }
+
+### Compatibility to PBIS <=v7.1.0
+
+PBIS version prior or equal to v7.1.0 do not require the `pbis-open-upgrade` package. Disable it's use by setting:
+
+    node 'workstation' {
+      class { 'pbis':
+        ...
+        package_prerequired => '',
       }
     }
 
