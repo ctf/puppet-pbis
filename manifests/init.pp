@@ -27,7 +27,7 @@ class pbis (
   if $use_repository == true {
     # If the package is on an external repo, install it normally.
     package { $package:
-      ensure => installed,
+      ensure => latest,
     }
   }
   elsif $use_repository == false {
@@ -51,7 +51,7 @@ class pbis (
       source  => "puppet:///modules/pbis/${package}.${package_file_suffix}",
     }
     package { $package:
-      ensure   => installed,
+      ensure   => latest,
       source   => "/opt/${package}.${package_file_suffix}",
       provider => $package_file_provider,
       require  => $require_for_package
@@ -63,7 +63,7 @@ class pbis (
 	    source => "puppet:///modules/pbis/${package_prerequired}.${package_file_suffix}",
 	  }
       package { $package_prerequired:
-        ensure   => installed,
+        ensure   => latest,
         source   => "/opt/${package_prerequired}.${package_file_suffix}",
         provider => $package_file_provider,
         require  => File["/opt/${package_prerequired}.${package_file_suffix}"],
