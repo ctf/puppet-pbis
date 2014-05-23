@@ -96,3 +96,5 @@ Please open a pull request with any changes or bugfixes.
 Likewise Open was acquired by BeyondTrust in 2011 and rebranded as PowerBroker Identity Services Open Edition. The project page is at [powerbrokeropen.org](http://www.powerbrokeropen.org).
 
 The original Likewise Open package is included in the Ubuntu repositories, but has not been updated in years.
+
+In Ubuntu 14.04, the Likewise Open package got removed in the default repositories. More details found in [this bug](https://bugs.launchpad.net/ubuntu/+source/likewise-open/+bug/1295031)
