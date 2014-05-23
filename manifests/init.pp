@@ -6,7 +6,8 @@ class pbis (
   $enabled_modules       = $pbis::params::enabled_modules,
   $disabled_modules      = $pbis::params::disabled_modules,
   $package               = $pbis::params::package,
-  $package_file          = $pbis::params::package_file,
+  $package_prerequired   = $pbis::params::package_prerequired,
+  $package_file_suffix   = $pbis::params::package_file_suffix,
   $package_file_provider = $pbis::params::package_file_provider,
   $service_name          = $pbis::params::service_name,
   $assume_default_domain = $pbis::params::assume_default_domain,
@@ -32,15 +33,39 @@ class pbis (
   elsif $use_repository == false {
     # Otherwise, download and install the package from the puppetmaster...
     # a low-performance repo for the poor man
-    file { "/opt/${package_file}":
+    
+    # Compatibilitity switch for pbis <= v7.1.0
+    # require also the prerequired package if it is not set to empty string
+    $require_for_package = File["/opt/${package}.${package_file_suffix}"]
+    if $package_prerequired == true {
+	  $require_for_package = [
+	    $require_for_package,
+	    Package[$package_prerequired]
+	  ]
+    }
+    
+    file { "/opt/${package}.${package_file_suffix}":
       ensure  => file,
-      source  => "puppet:///modules/pbis/${package_file}",
+      source  => "puppet:///modules/pbis/${package}.${package_file_suffix}",
     }
     package { $package:
       ensure   => installed,
-      source   => "/opt/${package_file}",
+      source   => "/opt/${package}.${package_file_suffix}",
       provider => $package_file_provider,
-      require  => File["/opt/${package_file}"],
+      require  => $require_for_package_full
+    }
+    # install the prerequired package if it is not set to empty string
+    if $package_prerequired == true {
+      file { "/opt/${package_prerequired}.${package_file_suffix}":
+	    ensure => file,
+	    source => "puppet:///modules/pbis/${package_prerequired}.${package_file_suffix}",
+	  }
+      package { $package_prerequired:
+        ensure   => installed,
+        source   => "/opt/${package_prerequired}.${package_file_suffix}",
+        provider => $package_file_provider,
+        require  => File["/opt/${package_prerequired}.${package_file_suffix}"],
+      }
     }
   }
   else {
