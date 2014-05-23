@@ -37,11 +37,11 @@ class pbis (
     # Compatibilitity switch for pbis <= v7.1.0
     # require also the prerequired package if it is not set to empty string
     if $package_prerequired == "" {
-	  $require_for_package = File["/opt/${package_prerequired}.${package_file_suffix}"]
+	  $require_for_package = File["/opt/${package}.${package_file_suffix}"]
     }
     else {
       $require_for_package = [
-        File["/opt/${package_prerequired}.${package_file_suffix}"],
+        File["/opt/${package}.${package_file_suffix}"],
         Package[$package_prerequired]
       ]
     }
