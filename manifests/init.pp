@@ -36,12 +36,14 @@ class pbis (
     
     # Compatibilitity switch for pbis <= v7.1.0
     # require also the prerequired package if it is not set to empty string
-    $require_for_package = File["/opt/${package}.${package_file_suffix}"]
-    if $package_prerequired == true {
-	  $require_for_package = [
-	    $require_for_package,
-	    Package[$package_prerequired]
-	  ]
+    if $package_prerequired == "" {
+	  $require_for_package = File["/opt/${package_prerequired}.${package_file_suffix}"]
+    }
+    else {
+      $require_for_package = [
+        File["/opt/${package_prerequired}.${package_file_suffix}"],
+        Package[$package_prerequired]
+      ]
     }
     
     file { "/opt/${package}.${package_file_suffix}":
@@ -52,10 +54,10 @@ class pbis (
       ensure   => installed,
       source   => "/opt/${package}.${package_file_suffix}",
       provider => $package_file_provider,
-      require  => $require_for_package_full
+      require  => $require_for_package
     }
     # install the prerequired package if it is not set to empty string
-    if $package_prerequired == true {
+    unless $package_prerequired == "" {
       file { "/opt/${package_prerequired}.${package_file_suffix}":
 	    ensure => file,
 	    source => "puppet:///modules/pbis/${package_prerequired}.${package_file_suffix}",
