@@ -88,12 +88,11 @@ class pbis (
     unless  => 'lsa ad-get-machine account 2> /dev/null | grep "NetBIOS Domain Name"',
   }
 
-  # Update DNS
-  exec { 'update_DNS':
-    path    => ['/opt/pbis/bin'],
-    command => 'update-dns',
-    require => Exec['join_domain'],
-    returns => [0, 204],
+  $cron_interval = fqdn_rand(59)
+  cron { 'update_DNS':
+    command => '/opt/pbis/bin/update-dns',
+    user    => 'root',
+    minute  => $cron_interval,
   }
 
   # Configure PBIS
