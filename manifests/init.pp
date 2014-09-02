@@ -21,6 +21,7 @@ class pbis (
   $skeleton_dirs         = $pbis::params::skeleton_dirs,
   $user_domain_prefix    = $pbis::params::user_domain_prefix,
   $use_repository        = $pbis::params::use_repository,
+  $dns_ipaddress         = $pbis::params::dns_ipaddress,
   ) inherits pbis::params {
 
   if $use_repository == true {
@@ -45,6 +46,13 @@ class pbis (
   }
   else {
     fail("Invalid input for use_repository: ${use_repository}.")
+  }
+
+  if $dns_ipaddress == false {
+    $update_dns_options = ''
+  }
+  else {
+    $update_dns_options = "--ipaddress ${dns_ipaddress}"
   }
 
   service { $service_name:
@@ -90,7 +98,7 @@ class pbis (
 
   $cron_interval = fqdn_rand(59)
   cron { 'update_DNS':
-    command => '/opt/pbis/bin/update-dns',
+    command => "/opt/pbis/bin/update-dns ${update_dns_options}",
     user    => 'root',
     minute  => $cron_interval,
   }

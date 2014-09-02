@@ -22,6 +22,7 @@ class pbis::params {
   $require_membership_of = undef
   $skeleton_dirs         = '/etc/skel'
   $user_domain_prefix    = undef
+  $dns_ipaddress         = undef
 
   if !( $::architecture in ['amd64', 'x86_64', 'i386'] ) {
     fail("Unsupported architecture: ${::architecture}.")
