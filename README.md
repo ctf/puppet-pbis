@@ -24,7 +24,7 @@ This module supports two ways of distributing the PBIS Open packages:
 
 The default is to use Puppet's built-in fileserver.
 
-In either case, download the necessary packages from the [BeyondTrust website](http://www.beyondtrust.com/Technical-Support/Downloads/PowerBroker-Identity-Services-Open-Edition/?Pass=True). Extract the architecture-specific `pbis-open` `.rpm` or `.deb` file from the self-extracting `sh` archive.
+In either case, download the necessary packages from the [BeyondTrust website](http://download1.beyondtrust.com/Technical-Support/Downloads/PowerBroker-Identity-Services-Open-Edition/?Pass=True). Extract the architecture-specific `pbis-open` `.rpm` or `.deb` file from the self-extracting `sh` archive.
 
 ### Using Puppet's built-in fileserver
 
@@ -32,9 +32,13 @@ Rename the `pbis-open` package files according to the following convention:
 
     pbis-open.amd64.deb
     pbis-open.i386.deb
+    pbis-open-upgrade.amd64.deb
+    pbis-open-upgrade.i386.deb
 
     pbis-open.x86_64.rpm
     pbis-open.i386.rpm
+    pbis-open-upgrade.x86_64.rpm
+    pbis-open-upgrade.i386.rpm
     
 and place them in the module's `files/` folder.
 
@@ -62,6 +66,17 @@ The service name may not be 'lsass' on newer version of PBIS and may be 'lwsmd'.
       }
     }
 
+### Compatibility to PBIS <=v7.1.0
+
+PBIS version prior or equal to v7.1.0 do not require the `pbis-open-upgrade` package. Disable it's use by setting:
+
+    node 'workstation' {
+      class { 'pbis':
+        ...
+        package_prerequired => '',
+      }
+    }
+
 ## Dependencies
 
 This module requires the `osfamily` fact, which depends on Facter 1.6.1+.
@@ -81,3 +96,5 @@ Please open a pull request with any changes or bugfixes.
 Likewise Open was acquired by BeyondTrust in 2011 and rebranded as PowerBroker Identity Services Open Edition. The project page is at [powerbrokeropen.org](http://www.powerbrokeropen.org).
 
 The original Likewise Open package is included in the Ubuntu repositories, but has not been updated in years.
+
+In Ubuntu 14.04, the Likewise Open package got removed in the default repositories. More details found in [this bug](https://bugs.launchpad.net/ubuntu/+source/likewise-open/+bug/1295031)

@@ -4,6 +4,11 @@ class pbis::params {
   $use_repository        = false
   $package               = 'pbis-open'
   $service_name          = 'lsass'
+  
+  # parameter ignored when using repository, but needed when using builtin
+  # fileserver after pbis v7.1.1 (see bug #3)
+  # set this to empty string to disable the preinstallation
+  $package_prerequired   = 'pbis-open-upgrade'
 
   # domainjoin-cli options
   $ou                    = undef
@@ -30,14 +35,14 @@ class pbis::params {
   # PBIS Open is packaged for Red Hat, Suse, and Debian derivatives.
   # When using Puppet's built-in fileserver, choose the .deb or .rpm 
   # automatically.
-  $package_file = $::osfamily ? {
-    'Debian'          => "${package}.${::architecture}.deb",
-    '/(RedHat|Suse)/' => "${package}.${::architecture}.rpm",
+  $package_file_suffix = $::osfamily ? {
+    'Debian'          => "${::architecture}.deb",
+    /(RedHat|Suse)/   => "${::architecture}.rpm",
     default           => fail("Unsupported operating system: ${::operatingsystem}."),
   }
   $package_file_provider = $::osfamily ? {
     'Debian'          => 'dpkg',
-    '/(RedHat|Suse)/' => 'rpm',
+    /(RedHat|Suse)/   => 'rpm',
     default           => fail("Unsupported operating system: ${::operatingsystem}."),
   }
 }
