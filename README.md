@@ -24,7 +24,7 @@ This module supports two ways of distributing the PBIS Open packages:
 
 The default is to use Puppet's built-in fileserver.
 
-In either case, download the necessary packages from the [BeyondTrust website](http://www.beyondtrust.com/Technical-Support/Downloads/PowerBroker-Identity-Services-Open-Edition/?Pass=True). Extract the architecture-specific `pbis-open` `.rpm` or `.deb` file from the self-extracting `sh` archive.
+In either case, download the necessary packages from the [BeyondTrust website](http://download1.beyondtrust.com/Technical-Support/Downloads/PowerBroker-Identity-Services-Open-Edition/?Pass=True). Extract the architecture-specific `pbis-open` `.rpm` or `.deb` file from the self-extracting `sh` archive.
 
 ### Using Puppet's built-in fileserver
 
