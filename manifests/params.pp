@@ -4,6 +4,7 @@ class pbis::params {
   $use_repository        = false
   $package               = 'pbis-open'
   $service_name          = 'lsass'
+  $do_updatedns          = true
 
   # domainjoin-cli options
   $ou                    = undef

@@ -21,6 +21,7 @@ class pbis (
   $skeleton_dirs         = $pbis::params::skeleton_dirs,
   $user_domain_prefix    = $pbis::params::user_domain_prefix,
   $use_repository        = $pbis::params::use_repository,
+  $do_updatedns          = $pbis::params::do_updatedns,
   ) inherits pbis::params {
 
   if $use_repository == true {
@@ -89,11 +90,13 @@ class pbis (
   }
 
   # Update DNS
-  exec { 'update_DNS':
-    path    => ['/opt/pbis/bin'],
-    command => 'update-dns',
-    require => Exec['join_domain'],
-    returns => [0, 204],
+  if $do_updatedns == true {
+    exec { 'update_DNS':
+      path    => ['/opt/pbis/bin'],
+      command => 'update-dns',
+      require => Exec['join_domain'],
+      returns => [0, 204],
+    }
   }
 
   # Configure PBIS
