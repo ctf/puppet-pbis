@@ -50,10 +50,10 @@ class pbis (
 
   service { $service_name:
     ensure     => running,
-    restart    => "/opt/pbis/bin/${service_name} restart lsass",
-    start      => "/opt/pbis/bin/${service_name} start lsass",
-    stop       => "/opt/pbis/bin/${service_name} stop lsass",
-    status     => "/opt/pbis/bin/${service_name} status lsass",
+    restart    => "/opt/pbis/bin/lwsm restart lsass",
+    start      => "/opt/pbis/bin/lwsm start lsass",
+    stop       => "/opt/pbis/bin/lwsm stop lsass",
+    status     => "/opt/pbis/bin/lwsm status lsass",
     require    => Package[$package],
   }
 
