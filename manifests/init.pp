@@ -27,6 +27,7 @@ class pbis (
     # If the package is on an external repo, install it normally.
     package { $package:
       ensure => installed,
+      install_options => ['--force-yes']
     }
   }
   elsif $use_repository == false {
