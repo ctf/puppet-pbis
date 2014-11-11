@@ -61,7 +61,7 @@ class pbis (
   # AssumeDefaultDomain and UserDomainPrefix are configured after joining
   if $ou {
     $ou_path = transform_ou($ou)
-    $opt_ou = "--ou ${ou_path}"
+    $opt_ou = "--ou ${ou}"
   }
   else {
     $opt_ou = ''
