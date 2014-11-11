@@ -83,8 +83,7 @@ class pbis (
 
   # Join the machine if it is not already on the domain.
   exec { 'join_domain':
-    path    => ['/bin', '/usr/bin', '/opt/pbis/bin'],
-    command => "domainjoin-cli join ${options} ${ad_domain} ${bind_username} ${bind_password}",
+    command => "/opt/pbis/bin/domainjoin-cli join ${options} ${ad_domain} ${bind_username} ${bind_password}",
     require => Service[$service_name],
     unless  => '/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null | grep "NetBIOS Domain Name"',
   }
