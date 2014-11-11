@@ -110,15 +110,14 @@ class pbis (
   }
 
   exec { 'configure_pbis':
-    path        => ['/opt/pbis/bin'],
-    command     => "config --file ${pbis_conf}",
+    command     => "/opt/pbis/bin/config --file ${pbis_conf}",
     subscribe   => File[$pbis_conf],
     refreshonly => true,
   }
 
   exec { 'clear_ad_cache':
     path        => ['/opt/pbis/bin'],
-    command     => 'ad-cache --delete-all',
+    command     => '/opt/pbis/bin/ad-cache --delete-all',
     subscribe   => Exec['configure_pbis'],
     refreshonly => true,
   }
