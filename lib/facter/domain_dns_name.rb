@@ -1,10 +1,10 @@
-# Fact: boot_partition_uuid
+# Fact: domain_dns_name
 #
 # Purpose:
-# Return the UUID of the EFI boot partition
+# Return the DNS name of the domain that the machine is joined to with PBIS
 #
 # Resolution:
-# Parse output of blkid, as well as do some test mounting to find the parition
+# Parse output of /opt/pbis/bin/lsa ad-get-machine account and report the value
 #
 # Caveats:
 # Linux only
