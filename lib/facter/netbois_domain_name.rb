@@ -1,7 +1,8 @@
-# Fact: domain_dns_name
+# Fact: netbois_domain_name
 #
 # Purpose:
-# Return the DNS name of the domain that the machine is joined to with PBIS
+# Return the NetBIOS domain name of the domain that the machine is joined to 
+# with PBIS
 #
 # Resolution:
 # Parse output of /opt/pbis/bin/lsa ad-get-machine account and report the value
