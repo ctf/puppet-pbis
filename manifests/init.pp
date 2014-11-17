@@ -85,7 +85,7 @@ class pbis (
   exec { 'join_domain':
     command => "/opt/pbis/bin/domainjoin-cli join ${options} ${ad_domain} ${bind_username} ${bind_password}",
     require => Service[$service_name],
-    unless  => '/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null | grep "NetBIOS Domain Name"',
+    unless  => '/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null',
   }
 
   # Update DNS
