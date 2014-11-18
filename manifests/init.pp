@@ -90,9 +90,10 @@ class pbis (
 
   # Update DNS
   exec { 'update_DNS':
-    command => '/opt/pbis/bin/update-dns',
-    require => Exec['join_domain'],
-    returns => [0, 204],
+    command     => '/opt/pbis/bin/update-dns',
+    require     => Exec['join_domain'],
+    returns     => [0, 204],
+    refreshonly => true,
   }
 
   # Configure PBIS
