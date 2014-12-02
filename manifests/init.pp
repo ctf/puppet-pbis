@@ -8,6 +8,7 @@ class pbis (
   $package               = $pbis::params::package,
   $package_file          = $pbis::params::package_file,
   $package_file_provider = $pbis::params::package_file_provider,
+  $service_name          = $pbis::params::service_name,
   $assume_default_domain = $pbis::params::assume_default_domain,
   $create_home_dir       = $pbis::params::create_home_dir,
   $domain_separator      = $pbis::params::domain_separator,
@@ -16,6 +17,7 @@ class pbis (
   $home_dir_umask        = $pbis::params::home_dir_umask,
   $home_dir_template     = $pbis::params::home_dir_template,
   $login_shell_template  = $pbis::params::login_shell_template,
+  $require_membership_of = $pbis::params::require_membership_of,
   $skeleton_dirs         = $pbis::params::skeleton_dirs,
   $user_domain_prefix    = $pbis::params::user_domain_prefix,
   $use_repository        = $pbis::params::use_repository,
@@ -38,14 +40,14 @@ class pbis (
       ensure   => installed,
       source   => "/opt/${package_file}",
       provider => $package_file_provider,
-      require  => File["/opt/${package}"],
+      require  => File["/opt/${package_file}"],
     }
   }
   else {
     fail("Invalid input for use_repository: ${use_repository}.")
   }
 
-  service { 'lsass':
+  service { $service_name:
     ensure     => running,
     restart    => '/opt/pbis/bin/lwsm restart lsass',
     start      => '/opt/pbis/bin/lwsm start lsass',
@@ -82,7 +84,7 @@ class pbis (
   exec { 'join_domain':
     path    => ['/bin', '/usr/bin', '/opt/pbis/bin'],
     command => "domainjoin-cli join ${options} ${ad_domain} ${bind_username} ${bind_password}",
-    require => Service['lsass'],
+    require => Service[$service_name],
     unless  => 'lsa ad-get-machine account 2> /dev/null | grep "NetBIOS Domain Name"',
   }
 

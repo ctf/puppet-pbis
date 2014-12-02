@@ -6,11 +6,12 @@ Joins a node to an Active Directory domain using PowerBroker Identity Services O
 
     node 'workstation' {
       class { 'pbis': 
-        ad_domain          => 'ads.example.org',
-        bind_username      => 'admin',
-        bind_password      => 'password',
-        ou                 => 'ou=Computers,ou=Department,ou=Divison',
-        user_domain_prefix => 'ADS',
+        ad_domain             => 'ads.example.org',
+        bind_username         => 'admin',
+        bind_password         => 'password',
+        ou                    => 'ou=Computers,ou=Department,ou=Divison',
+        user_domain_prefix    => 'ADS',
+        require_membership_of => 'ADS\\Linux_Users',
       }
     }
 
@@ -47,6 +48,17 @@ In that case, include the class with `use_repository => true`.
       class { 'pbis':
         ...
         use_repository => true,
+      }
+    }
+
+### Service name change.
+
+The service name may not be 'lsass' on newer version of PBIS and may be 'lwsmd'. This is now configurable as below:
+
+    node 'workstation' {
+      class { 'pbis':
+        ...
+        service_name => 'lwsmd',
       }
     }
 
