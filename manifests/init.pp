@@ -2,7 +2,7 @@ class pbis (
   $ad_domain,
   $bind_username,
   $bind_password,
-  $ou                    = rpbis::params::ou,
+  $ou                    = $pbis::params::ou,
   $enabled_modules       = $pbis::params::enabled_modules,
   $disabled_modules      = $pbis::params::disabled_modules,
   $package               = $pbis::params::package,
@@ -52,6 +52,7 @@ class pbis (
     # Copy the pbis-open package to the node.
     file { "/opt/${package_file}":
       ensure  => file,
+      source  => "puppet:///modules/pbis/${package_file}",
       links   => "follow",
       require => File["/opt"],
     }

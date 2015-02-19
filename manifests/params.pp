@@ -32,10 +32,16 @@ class pbis::params {
   # When using Puppet's built-in fileserver, choose the .deb or .rpm 
   # automatically.
 
-  # Get the packaging Format
+  # Get the packaging Format and Set the package installation provider
   case $::osfamily {
-    'Debian':        { $package_format = "deb" }
-    'RedHat','Suse': { $package_format = "rpm" }
+   'Debian':        { 
+      $package_file_provider = 'dpkg' 
+      $package_format = "deb" 
+    }
+    'RedHat','Suse': { 
+      $package_file_provider = 'rpm' 
+      $package_format = "rpm" 
+    }
     default:         {
       fail("Unsupported operating system: ${::operatingsystem}.")
     }
@@ -46,14 +52,4 @@ class pbis::params {
     "${package}.${::architecture}.${package_format}"
   $upgrade_package_file =
     "${upgrade_package}.${::architecture}.${package_format}"
-
-  # Set the package installation provider
-  case $::osfamily {
-   'Debian':        { $package_file_provider = 'dpkg' }
-   'RedHat','Suse': { $package_file_provider = 'rpm' }
-   default:         {
-     fail("Unsupported operating system: ${::operatingsystem}.")
-   }
-  }
-
 }
