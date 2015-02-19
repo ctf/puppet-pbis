@@ -12,14 +12,14 @@ class pbis::params {
   $disabled_modules      = undef
 
   # PBIS configuration
-  $assume_default_domain = true
+  $assume_default_domain = false
   $create_home_dir       = true
   $domain_separator      = '\\'
-  $space_replacement     = '_'
+  $space_replacement     = '^'
   $home_dir_prefix       = '/home'
   $home_dir_umask        = '022'
-  $home_dir_template     = '%H/%D/%U'
-  $login_shell_template  = '/bin/bash'
+  $home_dir_template     = '%H/local/%D/%U'
+  $login_shell_template  = '/bin/sh'
   $require_membership_of = undef
   $skeleton_dirs         = '/etc/skel'
   $user_domain_prefix    = undef
