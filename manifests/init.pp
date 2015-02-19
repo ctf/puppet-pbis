@@ -2,12 +2,14 @@ class pbis (
   $ad_domain,
   $bind_username,
   $bind_password,
-  $ou                    = $pbis::params::ou,
+  $ou                    = rpbis::params::ou,
   $enabled_modules       = $pbis::params::enabled_modules,
   $disabled_modules      = $pbis::params::disabled_modules,
   $package               = $pbis::params::package,
   $package_file          = $pbis::params::package_file,
   $package_file_provider = $pbis::params::package_file_provider,
+  $upgrade_package       = $pbis::params::upgrade_package,
+  $upgrade_package_file  = $pbis::params::upgrade_package_file,
   $service_name          = $pbis::params::service_name,
   $assume_default_domain = $pbis::params::assume_default_domain,
   $create_home_dir       = $pbis::params::create_home_dir,
@@ -33,19 +35,42 @@ class pbis (
   elsif $use_repository == false {
     # Otherwise, download and install the package from the puppetmaster...
     # a low-performance repo for the poor man
+
+    # Ensure that the /opt directory exists.
     file { "/opt" :
       ensure => "directory",
     }
+
+    # Copy the pbis-open-upgrade package to the node.
+    file { "/opt/${upgrade_package_file}":
+      ensure  => file,
+      source  => "puppet:///modules/pbis/${upgrade_package_file}",
+      links   => "follow",
+      require => File["/opt/"],
+    }
+
+    # Copy the pbis-open package to the node.
     file { "/opt/${package_file}":
-      ensure => file,
-      source => "puppet:///modules/pbis/${package_file}",
-      links  => "follow",
+      ensure  => file,
+      links   => "follow",
+      require => File["/opt"],
+    }
+
+    # Install the packages.
+    package { $upgrade_package:
+      ensure   => installed,
+      source   => "/opt/${upgrade_package_file}",
+      provider => $package_file_provider,
+      require  => File["/opt/${upgrade_package_file}"],
     }
     package { $package:
       ensure   => installed,
       source   => "/opt/${package_file}",
       provider => $package_file_provider,
-      require  => File["/opt/${package_file}"],
+      require  => [ 
+        File["/opt/${package_file}"],
+        Package["${upgrade_package}"],
+      ],
     }
   }
   else {

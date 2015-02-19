@@ -3,6 +3,7 @@ class pbis::params {
   # package options
   $use_repository        = false
   $package               = 'pbis-open'
+  $upgrade_package       = 'pbis-open-upgrade'
   $service_name          = 'lsass'
 
   # domainjoin-cli options
@@ -31,20 +32,28 @@ class pbis::params {
   # When using Puppet's built-in fileserver, choose the .deb or .rpm 
   # automatically.
 
+  # Get the packaging Format
   case $::osfamily {
-     'Debian':        { $package_file = "${package}.${::architecture}.deb" }
-     'RedHat','Suse': { $package_file = "${package}.${::architecture}.rpm" }
-     default:         {
-       fail("Unsupported operating system: ${::operatingsystem}.")
-     }
-  }
-
-  case $::osfamily {
-    'Debian':        { $package_file_provider = 'dpkg' }
-    'RedHat','Suse': { $package_file_provider = 'rpm' }
+    'Debian':        { $package_format = "deb" }
+    'RedHat','Suse': { $package_format = "rpm" }
     default:         {
       fail("Unsupported operating system: ${::operatingsystem}.")
     }
+  }
+
+  # Build the file names.
+  $package_file =
+    "${package}.${::architecture}.${package_format}"
+  $upgrade_package_file =
+    "${upgrade_package}.${::architecture}.${package_format}"
+
+  # Set the package installation provider
+  case $::osfamily {
+   'Debian':        { $package_file_provider = 'dpkg' }
+   'RedHat','Suse': { $package_file_provider = 'rpm' }
+   default:         {
+     fail("Unsupported operating system: ${::operatingsystem}.")
+   }
   }
 
 }
