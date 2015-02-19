@@ -33,6 +33,9 @@ class pbis (
   elsif $use_repository == false {
     # Otherwise, download and install the package from the puppetmaster...
     # a low-performance repo for the poor man
+    file { "/opt" :
+      ensure => "directory",
+    }
     file { "/opt/${package_file}":
       ensure => file,
       source => "puppet:///modules/pbis/${package_file}",
