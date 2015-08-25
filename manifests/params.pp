@@ -24,6 +24,10 @@ class pbis::params {
   $skeleton_dirs         = '/etc/skel'
   $user_domain_prefix    = undef
 
+  # update-dns options
+  $dns_ipaddress         = undef
+  $dns_ipv6address       = undef
+
   if !( $::architecture in ['amd64', 'x86_64', 'i386'] ) {
     fail("Unsupported architecture: ${::architecture}.")
   }

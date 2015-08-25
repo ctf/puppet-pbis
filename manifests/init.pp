@@ -23,6 +23,9 @@ class pbis (
   $skeleton_dirs         = $pbis::params::skeleton_dirs,
   $user_domain_prefix    = $pbis::params::user_domain_prefix,
   $use_repository        = $pbis::params::use_repository,
+  $dns_ipaddress         = $pbis::params::dns_ipaddress,
+  $dns_ipv6address       = $pbis::params::dns_ipv6address,
+
   ) inherits pbis::params {
 
   if $use_repository == true {
@@ -118,8 +121,16 @@ class pbis (
   }
 
   # Update DNS
+
+  if ( $dns_ipaddress ) {
+    $dns_ipaddress_args = "--ipaddress $dns_ipaddress"
+  }
+  else {
+     $dns_ipaddress_args = ''
+  }
+
   exec { 'update_DNS':
-    command     => '/opt/pbis/bin/update-dns',
+    command     => "/opt/pbis/bin/update-dns $dns_ipaddress_args",
     require     => Exec['join_domain'],
     returns     => [0, 204],
     refreshonly => true,
