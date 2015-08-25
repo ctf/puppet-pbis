@@ -38,13 +38,13 @@ class pbis::params {
 
   # Get the packaging Format and Set the package installation provider
   case $::osfamily {
-   'Debian':        { 
-      $package_file_provider = 'dpkg' 
-      $package_format = "deb" 
+    'Debian':        {
+      $package_file_provider = 'dpkg'
+      $package_format = 'deb'
     }
-    'RedHat','Suse': { 
-      $package_file_provider = 'rpm' 
-      $package_format = "rpm" 
+    'RedHat','Suse': {
+      $package_file_provider = 'rpm'
+      $package_format = 'rpm'
     }
     default:         {
       fail("Unsupported operating system: ${::operatingsystem}.")
