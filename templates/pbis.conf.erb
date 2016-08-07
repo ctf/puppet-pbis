@@ -1,14 +1,14 @@
-DomainSeparator "<%= domain_separator -%>"
-SpaceReplacement "<%= space_replacement -%>"
-AssumeDefaultDomain <%= assume_default_domain %>
-CreateHomeDir <%= create_home_dir %>
-HomeDirPrefix "<%= home_dir_prefix -%>"
-HomeDirTemplate "<%= home_dir_template -%>"
-HomeDirUmask "<%= home_dir_umask -%>"
-LoginShellTemplate "<%= login_shell_template -%>"
-Local_LoginShellTemplate "<%= login_shell_template -%>"
-SkeletonDirs "<%= skeleton_dirs -%>"
-Local_SkeletonDirs "<%= skeleton_dirs -%>"
-UserDomainPrefix "<%= user_domain_prefix -%>"
-<% if @require_membership_of -%>RequireMembershipOf "<%= require_membership_of -%>"<% end -%>
+DomainSeparator "<%= @domain_separator -%>"
+SpaceReplacement "<%= @space_replacement -%>"
+AssumeDefaultDomain <%= @assume_default_domain %>
+CreateHomeDir <%= @create_home_dir %>
+HomeDirPrefix "<%= @home_dir_prefix -%>"
+HomeDirTemplate "<%= @home_dir_template -%>"
+HomeDirUmask "<%= @home_dir_umask -%>"
+LoginShellTemplate "<%= @login_shell_template -%>"
+Local_LoginShellTemplate "<%= @login_shell_template -%>"
+SkeletonDirs "<%= @skeleton_dirs -%>"
+Local_SkeletonDirs "<%= @skeleton_dirs -%>"
+UserDomainPrefix "<%= @user_domain_prefix -%>"
+<% if @require_membership_of -%>RequireMembershipOf "<%= @require_membership_of -%>"<% end -%>
 
