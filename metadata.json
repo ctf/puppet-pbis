@@ -7,6 +7,5 @@
   "source": "https://github.com/woodsbw/puppet-pbis",
   "project_page": "https://github.com/woodsbw/puppet-pbis",
   "issues_url": "https://github.com/woodsbw/puppet-pbis",
-  "dependencies": []
+  "dependencies": [{ "name": "puppetlabs/concat","version_requirement": ">= 2.2.0"}]
 }
-
