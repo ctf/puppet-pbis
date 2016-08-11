@@ -11,9 +11,19 @@
 #
 # Author: Ben Woods <woodsbw@gmail.com>
 Facter.add(:domain_dns_name) do
+  has_weight 100
   setcode do
-    line_output = `/opt/pbis/bin/lsa ad-get-machine account | grep 'DNS Domain Name'`.split(":")
-    data_to_return = line_output[1].strip
-    data_to_return
+    if File.exist? '/opt/pbis/bin/lsa'
+      line_output = `/opt/pbis/bin/lsa ad-get-machine account | grep 'DNS Domain Name'`.to_s.split(":")
+      data_to_return = line_output[1].to_s.strip
+      data_to_return
+    end
   end
 end
+
+Facter.add(:domain_dns_name) do
+  setcode do
+    'not defined'
+  end
+end
+
