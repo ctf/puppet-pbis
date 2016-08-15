@@ -1,9 +1,10 @@
 class pbis::params {
 
   # package options
-  $use_repository        = false
+  $repository            = 'http://localhost/'
   $package               = 'pbis-open'
   $upgrade_package       = 'pbis-open-upgrade'
+  $version               = '8.5.0-153'
   $service_name          = 'lsass'
 
   # domainjoin-cli options
@@ -14,8 +15,6 @@ class pbis::params {
   # PBIS configuration
   $assume_default_domain = false
   $create_home_dir       = true
-  $domain_separator      = '\\'
-  $space_replacement     = '^'
   $home_dir_prefix       = '/home'
   $home_dir_umask        = '022'
   $home_dir_template     = '%H/local/%D/%U'
@@ -53,7 +52,7 @@ class pbis::params {
 
   # Build the file names.
   $package_file =
-    "${package}.${::architecture}.${package_format}"
+    "${package}.${version}.${::architecture}.${package_format}"
   $upgrade_package_file =
-    "${upgrade_package}.${::architecture}.${package_format}"
+    "${upgrade_package}.${version}.${::architecture}.${package_format}"
 }

@@ -1,4 +1,0 @@
-# This module requires serving the PBIS package from files/.
-#
-# This file is a placeholder to track the otherwise empty directory. This is 
-# necessary so that the module can be installed as a git submodule.

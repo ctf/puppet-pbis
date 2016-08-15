@@ -1,0 +1,32 @@
+---
+provisioner:
+  name: puppet_apply
+  files_path: files
+  manifests_path: test/integration
+
+driver:
+  name: docker
+  docker: /usr/bin/docker
+  use_sudo: false
+
+platforms:
+  - name: centos-7
+    driver_config:
+      provision_command:
+        - yum update -y
+        # Install common dependencies
+        - yum install -y net-tools tar wget which
+
+suites:
+  - name: rhel
+    provisioner:
+      puppet_verbose: true
+      puppet_debug: true
+      require_puppet_collections: true
+      ruby_bindir: /usr/bin/ruby
+      require_chef_for_busser: false
+      puppet_yum_collections_repo: https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+      manifest: pbis/init.pp
+      modules_path: modules
+    includes:
+      - centos-7

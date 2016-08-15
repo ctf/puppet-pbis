@@ -1,0 +1,8 @@
+fixtures:
+  forge_modules:
+    concat:
+      repo: "puppetlabs/concat"
+    wget:
+      repo: "maestrodev/wget"
+  symlinks:
+    pbis: "#{source_dir}"

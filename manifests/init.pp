@@ -13,8 +13,6 @@ class pbis (
   $service_name          = $pbis::params::service_name,
   $assume_default_domain = $pbis::params::assume_default_domain,
   $create_home_dir       = $pbis::params::create_home_dir,
-  $domain_separator      = $pbis::params::domain_separator,
-  $space_replacement     = $pbis::params::space_replacement,
   $home_dir_prefix       = $pbis::params::home_dir_prefix,
   $home_dir_umask        = $pbis::params::home_dir_umask,
   $home_dir_template     = $pbis::params::home_dir_template,
@@ -22,74 +20,33 @@ class pbis (
   $require_membership_of = $pbis::params::require_membership_of,
   $skeleton_dirs         = $pbis::params::skeleton_dirs,
   $user_domain_prefix    = $pbis::params::user_domain_prefix,
-  $use_repository        = $pbis::params::use_repository,
+  $repository            = $pbis::params::use_repository,
   $dns_ipaddress         = $pbis::params::dns_ipaddress,
   $dns_ipv6address       = $pbis::params::dns_ipv6address,
 
   ) inherits pbis::params {
 
-  if $use_repository == true {
-    # If the package is on an external repo, install it normally.
-    package { $package:
-      ensure          => installed,
-      install_options => ['--force-yes']
-    }
+  wget::fetch { $repository:
+    destination => '/tmp/',
+    timeout     => 0,
+    verbose     => false,
   }
-  elsif $use_repository == false {
-    # Otherwise, download and install the package from the puppetmaster...
-    # a low-performance repo for the poor man
-
-    # Ensure that the /opt directory exists.
-    file { '/opt' :
-      ensure => 'directory',
-    }
-
-    # Copy the pbis-open-upgrade package to the node.
-    file { "/opt/${upgrade_package_file}":
-      ensure  => file,
-      source  => "puppet:///modules/pbis/${upgrade_package_file}",
-      links   => 'follow',
-      require => File['/opt/'],
-    }
-
-    # Copy the pbis-open package to the node.
-    file { "/opt/${package_file}":
-      ensure  => file,
-      source  => "puppet:///modules/pbis/${package_file}",
-      links   => 'follow',
-      require => File['/opt'],
-    }
-
     # Install the packages.
-    package { $upgrade_package:
-      ensure   => installed,
-      source   => "/opt/${upgrade_package_file}",
-      provider => $package_file_provider,
-      require  => File["/opt/${upgrade_package_file}"],
-    }
-    package { $package:
-      ensure   => installed,
-      source   => "/opt/${package_file}",
-      provider => $package_file_provider,
-      require  => [
-        File["/opt/${package_file}"],
-        Package[$upgrade_package],
-      ],
-    }
-  }
-  else {
-    fail("Invalid input for use_repository: ${use_repository}.")
+  package { $package:
+    ensure   => installed,
+    source   => "/tmp/${package_file}",
+    provider => $package_file_provider
   }
 
   service { $service_name:
     ensure  => running,
+    enable  => true,
     restart => '/opt/pbis/bin/lwsm restart lsass',
     start   => '/opt/pbis/bin/lwsm start lsass',
     stop    => '/opt/pbis/bin/lwsm stop lsass',
     status  => '/opt/pbis/bin/lwsm status lsass',
     require => Package[$package],
   }
-
   # Construct the domainjoin-cli options string
   # AssumeDefaultDomain and UserDomainPrefix are configured after joining
   if $ou {
