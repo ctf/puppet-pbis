@@ -12,27 +12,26 @@ describe 'pbis' do
     it { should compile }
     it { should contain_class('pbis::params') }
     it do
-      is_expected.to contain_wget__fetch('http://localhost/').with(
-          'destination' => '/tmp/',
+      is_expected.to contain_wget__fetch('http://localhost//pbis-open-8.5.0.153.linux.x86_64.rpm.sh').with(
+          'destination' => '/tmp/pbis-open-8.5.0.153.linux.x86_64.rpm.sh',
           'timeout'     => 0,
           'verbose'     => false
       )
     end
     it do
-      is_expected.to contain_package('pbis-open').with(
-          'provider' => 'rpm',
-          'ensure'   => 'installed'
+      is_expected.to contain_exec('install pbis').with(
+          'command' => "/bin/sh /tmp/pbis-open-8.5.0.153.linux.x86_64.rpm.sh install",
       )
     end
     it do
-      is_expected.to contain_service('lsass').with(
+      is_expected.to contain_service('lwsmd').with(
           'enable' => true,
           'ensure' => 'running'
       )
     end
-    it { is_expected.to contain_service('lsass').that_requires('package[pbis-open]') }
+    it { is_expected.to contain_service('lwsmd').that_requires('exec[install pbis]') }
     it { is_expected.to contain_exec('join_domain') }
-    it { is_expected.to contain_exec('join_domain').that_requires('service[lsass]') }
+    it { is_expected.to contain_exec('join_domain').that_requires('service[lwsmd]') }
     it do
       is_expected.to contain_exec('update_DNS').with(
           'refreshonly' => true

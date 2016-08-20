@@ -20,32 +20,27 @@ class pbis (
   $require_membership_of = $pbis::params::require_membership_of,
   $skeleton_dirs         = $pbis::params::skeleton_dirs,
   $user_domain_prefix    = $pbis::params::user_domain_prefix,
-  $repository            = $pbis::params::use_repository,
+  $repository            = $pbis::params::repository,
   $dns_ipaddress         = $pbis::params::dns_ipaddress,
   $dns_ipv6address       = $pbis::params::dns_ipv6address,
 
   ) inherits pbis::params {
 
-  wget::fetch { $repository:
-    destination => '/tmp/',
+  wget::fetch { "${repository}/${package_file}":
+    destination => "/tmp/${package_file}",
     timeout     => 0,
     verbose     => false,
-  }
+  } ->
     # Install the packages.
-  package { $package:
-    ensure   => installed,
-    source   => "/tmp/${package_file}",
-    provider => $package_file_provider
+  exec { 'install pbis':
+    command => "/bin/sh /tmp/${package_file} install",
+    unless  => "/bin/pbis status | grep ${pbis::params::version}",
   }
 
   service { $service_name:
     ensure  => running,
     enable  => true,
-    restart => '/opt/pbis/bin/lwsm restart lsass',
-    start   => '/opt/pbis/bin/lwsm start lsass',
-    stop    => '/opt/pbis/bin/lwsm stop lsass',
-    status  => '/opt/pbis/bin/lwsm status lsass',
-    require => Package[$package],
+    require => Exec['install pbis'],
   }
   # Construct the domainjoin-cli options string
   # AssumeDefaultDomain and UserDomainPrefix are configured after joining

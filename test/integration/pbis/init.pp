@@ -4,4 +4,5 @@ class { 'pbis':
   bind_password      => 'password',
   ou                 => 'ou=Computers,ou=Department,ou=Divison',
   user_domain_prefix => 'ADS',
+  repository         => 'http://192.168.0.22'
 }

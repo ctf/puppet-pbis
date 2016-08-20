@@ -8,6 +8,9 @@ driver:
   name: docker
   docker: /usr/bin/docker
   use_sudo: false
+  privileged: true
+  cap_add: SYS_ADMIN
+  run_command: /usr/sbin/init
 
 platforms:
   - name: centos-7

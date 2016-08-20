@@ -1,11 +1,11 @@
 class pbis::params {
 
   # package options
-  $repository            = 'http://localhost/'
+  $repository            = 'http://localhost'
   $package               = 'pbis-open'
   $upgrade_package       = 'pbis-open-upgrade'
-  $version               = '8.5.0-153'
-  $service_name          = 'lsass'
+  $version               = '8.5.0.153'
+  $service_name          = 'lwsmd'
 
   # domainjoin-cli options
   $ou                    = undef
@@ -52,7 +52,5 @@ class pbis::params {
 
   # Build the file names.
   $package_file =
-    "${package}.${version}.${::architecture}.${package_format}"
-  $upgrade_package_file =
-    "${upgrade_package}.${version}.${::architecture}.${package_format}"
+    "${package}-${version}.linux.${::architecture}.${package_format}.sh"
 }
