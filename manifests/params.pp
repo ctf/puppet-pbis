@@ -4,7 +4,7 @@ class pbis::params {
   $repository            = 'http://localhost'
   $package               = 'pbis-open'
   $upgrade_package       = 'pbis-open-upgrade'
-  $version               = '8.5.0.153'
+  $version               = '8.5.0-153'
   $service_name          = 'lwsmd'
 
   # domainjoin-cli options
