@@ -34,6 +34,7 @@ class pbis (
     # Install the packages.
   exec { 'install pbis':
     command => "/bin/sh /tmp/${package_file} install",
+    path    => ['/usr/bin', '/usr/sbin', '/bin'],
     unless  => "rpm -qa | grep pbis-open-${pbis::params::version}.${::architecture} -ci",
   }
 
