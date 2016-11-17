@@ -12,6 +12,7 @@ Joins a node to an Active Directory domain using PowerBroker Identity Services O
         ou                    => 'ou=Computers,ou=Department,ou=Divison',
         user_domain_prefix    => 'ADS',
         require_membership_of => 'ADS\\Linux_Users',
+        version               => "8.5.1-206"
       }
     }
 
@@ -24,7 +25,8 @@ This module supports two ways of distributing the PBIS Open packages:
 
 The default is to use Puppet's built-in fileserver.
 
-In either case, download the necessary packages from the [BeyondTrust website](http://www.beyondtrust.com/Technical-Support/Downloads/PowerBroker-Identity-Services-Open-Edition/?Pass=True). Extract the architecture-specific `pbis-open` `.rpm` or `.deb` file from the self-extracting `sh` archive.
+In either case, download the necessary packages from the [BeyondTrust Repo website](https://repo.pbis.beyondtrust.com/).
+You can access the x86_64 RPMs directly, for example: (https://repo.pbis.beyondtrust.com/yum/pbiso/x86_64/Packages/)
 
 ### Using Puppet's built-in fileserver
 
