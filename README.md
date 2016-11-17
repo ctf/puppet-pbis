@@ -44,18 +44,11 @@ and place them in the module's `files/` folder.
 
 For scalability, or if you are using variable module paths, you may want to add the PBIS Open packages to a local `apt` or `yum` repository.
 
-In that case, include the class with `use_repository => true`.
-
-    node 'workstation' {
-      class { 'pbis':
-        ...
-        use_repository => true,
-      }
-    }
+In that case, sync with the [BeyondTrust Public Repo](https://repo.pbis.beyondtrust.com), and set $yum_install => true (the default)
 
 ### Service name change.
 
-The service name may not be 'lsass' on newer version of PBIS and may be 'lwsmd'. This is now configurable as below:
+The service name was changed from 'lsass' to 'lwsmd' in Likewise Open 6.0, and therefore all versions of PBIS. This is now configurable as below:
 
     node 'workstation' {
       class { 'pbis':
@@ -67,12 +60,13 @@ The service name may not be 'lsass' on newer version of PBIS and may be 'lwsmd'.
 ## Dependencies
 
 This module requires the `osfamily` fact, which depends on Facter 1.6.1+.
+This module requires the 'wget' module, which you can get via: `puppet module install maestrodev-wget --version 1.7.3`
 
 ## Supported platforms
 
 This module has been tested against Puppet 2.7.18+ and Facter 1.6.9+ on Debian 7 and Ubuntu 12.04.
 
-Support for RedHat and Suse is included but has not been tested.
+Support for RedHat and Suse is included and has been tested 2016-11-16.
 
 ## Contributing
 
