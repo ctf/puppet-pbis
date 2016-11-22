@@ -26,16 +26,38 @@ class pbis (
 
   ) inherits pbis::params {
 
-  wget::fetch { "${repository}/${package_file}":
-    destination => "/tmp/${package_file}",
-    timeout     => 0,
-    verbose     => false,
-  } ->
-    # Install the packages.
-  exec { 'install pbis':
-    command => "/bin/sh /tmp/${package_file} install",
-    path    => ['/usr/bin', '/usr/sbin', '/bin'],
-    unless  => "rpm -qa | grep pbis-open-${pbis::params::version}.${::architecture} -ci",
+  if $yum_install {
+    wget::fetch { $pbis::params::repo_source:
+      destination => $pbis::params::repo_dest,
+      timeout     => 0,
+      verbose     => false,
+      unless      => "grep -ci 'enabled=1' ${pbis::params::repo_dest}",
+    } ->
+    exec { 'refresh package list':
+      command => $pbis::params::repo_refresh,
+      path => ['/usr/bin', '/usr/sbin', '/bin'],
+      unless => "${pbis::params::repo_search} | grep '${pbis::params::version}.${pbis::params::version_qfe}' -ci",
+    } ->
+    # SELinux relabel can take a long time, give the install literally 10 minutes to complete
+    exec { 'install pbis':
+      command => "${pbis::params::repo_install} ${package}",
+      path => ['/usr/bin', '/usr/sbin', '/bin'],
+      unless => "grep -ci '${pbis::params::version}.${pbis::params::version_build}' /opt/pbis/data/VERSION",
+      timeout => 600,
+    }
+  }
+  else {
+    wget::fetch { "${repository}/${package_file}":
+      destination => "/tmp/${package_file}",
+      timeout     => 0,
+      verbose     => false,
+    } ->
+      # Install the packages.
+    exec { 'install pbis':
+      command => "/bin/sh /tmp/${package_file} install",
+      path    => ['/usr/bin', '/usr/sbin', '/bin'],
+      unless  => "rpm -qa | grep pbis-open-${pbis::params::version}.${::architecture} -ci",
+    }
   }
 
   service { $service_name:
@@ -100,7 +122,8 @@ class pbis (
     mode    => '0644',
     content => template('pbis/pbis.conf.erb'),
     require => Exec['join_domain'],
-    notify  => Exec['clear_ad_cache'],
+  #  notify  => Exec['clear_ad_cache'],
+  # not needed, since the config command does that for us if required.
   }
 
   exec { 'configure_pbis':
@@ -109,10 +132,12 @@ class pbis (
     refreshonly => true,
   }
 
-  exec { 'clear_ad_cache':
-    path        => ['/opt/pbis/bin'],
-    command     => '/opt/pbis/bin/ad-cache --delete-all',
-    subscribe   => Exec['configure_pbis'],
-    refreshonly => true,
-  }
+# This isn't required, since "/opt/pbis/bin/config" will refresh/clear cache as required for the settings set.
+# It is therefore actually potentially dangerous, as some versions of PBIS will clear the cache even if the host is offline.
+#  exec { 'clear_ad_cache':
+#    path        => ['/opt/pbis/bin'],
+#    command     => '/opt/pbis/bin/ad-cache --delete-all',
+#    subscribe   => Exec['configure_pbis'],
+#    refreshonly => true,
+#  }
 }

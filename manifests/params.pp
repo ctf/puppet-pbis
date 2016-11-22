@@ -1,11 +1,21 @@
 class pbis::params {
 
   # package options
-  $repository            = 'http://localhost'
-  $package               = 'pbis-open'
-  $upgrade_package       = 'pbis-open-upgrade'
-  $version               = '8.5.0-153'
+  $repository            = 'http://repo.pbis.beyondtrust.com'
+  $product_name          = 'pbis'
+  $product_class         = 'open'
+  $package               = "${product_name}-${product_class}"
+  $upgrade_package       = "${package}-upgrade"
+  $legacy_package        = "${package}-legacy"
+  $gui_package           = "${package}-gui"
+  $version               = '8.5'
+  $version_qfe           = '1'
+  $version_build         = '206'
+  $package_version       = "${version}.${version_qfe}-${version_build}"
   $service_name          = 'lwsmd'
+  # expect 'yum' or 'wget' below.  'wget' performs the 2016-11-15 and earlier install of wget + rpm -Uvh
+  # true  = yum, which pulls from the public PBIS repo (or your own sync to Spacewalk)
+  $yum_install = true
 
   # domainjoin-cli options
   $ou                    = undef
@@ -17,7 +27,7 @@ class pbis::params {
   $create_home_dir       = true
   $home_dir_prefix       = '/home'
   $home_dir_umask        = '022'
-  $home_dir_template     = '%H/local/%D/%U'
+  $home_dir_template     = '%H/%D/%U'
   $login_shell_template  = '/bin/sh'
   $require_membership_of = undef
   $skeleton_dirs         = '/etc/skel'
@@ -27,8 +37,20 @@ class pbis::params {
   $dns_ipaddress         = undef
   $dns_ipv6address       = undef
 
-  if !( $::architecture in ['amd64', 'x86_64', 'i386'] ) {
-    fail("Unsupported architecture: ${::architecture}.")
+  if !( $::architecture in ['amd64', 'x86_64', 'i386', 'ppc64', 'ppc64le',] ) {
+    fail("Unsupported architecture- ${::architecture}.")
+  }
+
+  case $product_class {
+    'open': {
+        $repo_class = 'pbiso'
+    }
+    'enterprise': {
+        $repo_class = 'pbise'
+    }
+    default:  {
+        $repo_class = 'pbiso'
+    }
   }
 
   # PBIS Open is packaged for Red Hat, Suse, and Debian derivatives.
@@ -40,10 +62,31 @@ class pbis::params {
     'Debian':        {
       $package_file_provider = 'dpkg'
       $package_format = 'deb'
+      $repo_base = 'apt'
+      $repo_ext = 'list'
+      case $repo_class {
+        'pbiso': {
+          $package_source = "${repository}/${repo_base}/pool/main/p/${package}/${package}-${package_version}.${::archtecture}.rpm"
+        }
+        'pbise': {
+          $package_source = "${repository}/${repo_base}/pool/non-free/p/${package}/${package}-${package_version}.${::archtecture}.rpm"
+        }
+      }
+      $repo_dest = "/etc/apt/sources.list.d/${repo_class}.${repo_ext}"
+      $repo_refresh = "apt update"
+      $repo_install = "apt -y install"
+      $repo_search = "apt-cache show ${package}"
     }
     'RedHat','Suse': {
       $package_file_provider = 'rpm'
       $package_format = 'rpm'
+      $repo_base = 'yum'
+      $repo_ext = 'repo'
+      $package_source = "${repository}/${repo_base}/${repo_class}/${::architecture}/Packages/${package}-${package_version}.${::architecture}.rpm"
+      $repo_dest = "/etc/yum.repos.d/${repo_class}.${repo_ext}"
+      $repo_refresh = "yum clean all"
+      $repo_install = "yum -y install"
+      $repo_search = "yum list available ${package} --showduplicates"
     }
     default:         {
       fail("Unsupported operating system: ${::operatingsystem}.")
@@ -52,5 +95,8 @@ class pbis::params {
 
   # Build the file names.
   $package_file =
-    "${package}-${version}.linux.${::architecture}.${package_format}.sh"
+    "${package}-${package_version}.linux.${::architecture}.${package_format}.sh"
+  $upgrade_package_file =
+    "${upgrade_package}-${package_version}.linux.${::architecture}.${package_format}.sh"
+  $repo_source = "${repository}/${repo_base}/${repo_class}.${repo_ext}"
 }
