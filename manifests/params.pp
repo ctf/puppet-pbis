@@ -3,7 +3,7 @@ class pbis::params {
   # package options
   $repository            = 'https://repo.pbis.beyondtrust.com'
   $product_name          = 'pbis'
-  $product_class         = 'enterprise'
+  $product_class         = 'open'
   $package               = "${product_name}-${product_class}"
   $upgrade_package       = "${package}-upgrade"
   $legacy_package        = "${package}-legacy"
