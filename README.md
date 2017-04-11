@@ -9,10 +9,10 @@ Joins a node to an Active Directory domain using PowerBroker Identity Services O
         ad_domain             => 'ads.example.org',
         bind_username         => 'admin',
         bind_password         => 'password',
-        ou                    => 'ou=Computers,ou=Department,ou=Divison',
+        ou                    => 'division/Department/computers',
         user_domain_prefix    => 'ADS',
         require_membership_of => 'ADS\\Linux_Users',
-        version               => "8.5.1-206"
+        version               => "8.5.3-293"
       }
     }
 
