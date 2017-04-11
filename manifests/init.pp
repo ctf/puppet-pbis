@@ -27,6 +27,7 @@ class pbis (
 
   ) inherits pbis::params {
 
+  notice("Starting PBIS class configuration.")
   if $yum_install {
     wget::fetch { $pbis::params::repo_source:
       destination => $pbis::params::repo_dest,
@@ -55,12 +56,14 @@ class pbis (
       timeout     => 0,
       verbose     => false,
     } ->
-      # Install the packages.
+    # Install the packages.
+    # SELinux relabel can take a long time, give the install literally 10 minutes to complete
     exec { 'install pbis':
       command => "/bin/sh /tmp/${package_file} install",
       path    => ['/usr/bin', '/usr/sbin', '/bin'],
       unless => "${pbis::params::repo_search} | grep '${pbis::params::version}.${pbis::params::version_qfe}' -ci",
       logoutput => 'on_failure',
+      timeout => 600
     }
   }
 
@@ -104,7 +107,7 @@ class pbis (
     command => "/opt/pbis/bin/domainjoin-cli join ${options} ${ad_domain} ${bind_username} ${bind_password}",
     logoutput => true,
     require => Service[$service_name],
-    unless  => '/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null | grep "NetBIOS Domain Name"',
+    unless  => '/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null',
   }
 
   # Update DNS
@@ -135,7 +138,7 @@ class pbis (
     content => template('pbis/pbis.conf.erb'),
     require => Exec['join_domain'],
   #  notify  => Exec['clear_ad_cache'],
-  # not needed, since the config command does that for us if required.
+  # not needed, since the config command does that for us if required (based on the options in the file)
   }
 
   exec { 'configure_pbis':

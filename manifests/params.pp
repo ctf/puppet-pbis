@@ -9,8 +9,8 @@ class pbis::params {
   $legacy_package        = "${package}-legacy"
   $gui_package           = "${package}-gui"
   $version               = '8.5'
-  $version_qfe           = '1'
-  $version_build         = '206'
+  $version_qfe           = '3'
+  $version_build         = '293'
   $package_version       = "${version}.${version_qfe}-${version_build}"
   $service_name          = 'lwsmd'
   # expect 'yum' or 'wget' below.  'wget' performs the 2016-11-15 and earlier install of wget + rpm -Uvh
