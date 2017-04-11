@@ -7,7 +7,7 @@
 # Parse output of /opt/pbis/bin/lsa ad-get-machine account and report the value
 #
 # Caveats:
-# Linux only
+# Linux only - not true, works on all Unixes that PBIS supports
 #
 # Author: Ben Woods <woodsbw@gmail.com>
 Facter.add(:domain_dns_name) do

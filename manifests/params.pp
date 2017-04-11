@@ -1,9 +1,9 @@
 class pbis::params {
 
   # package options
-  $repository            = 'http://repo.pbis.beyondtrust.com'
+  $repository            = 'https://repo.pbis.beyondtrust.com'
   $product_name          = 'pbis'
-  $product_class         = 'open'
+  $product_class         = 'enterprise'
   $package               = "${product_name}-${product_class}"
   $upgrade_package       = "${package}-upgrade"
   $legacy_package        = "${package}-legacy"
@@ -50,12 +50,15 @@ class pbis::params {
   case $product_class {
     'open': {
         $repo_class = 'pbiso'
+        $version_file = "/opt/pbis/data/VERSION"
     }
     'enterprise': {
         $repo_class = 'pbise'
+        $version_file = "/opt/pbis/data/ENTERPRISE_VERSION"
     }
     default:  {
         $repo_class = 'pbiso'
+        $version_file = "/opt/pbis/data/VERSION"
     }
   }
 
@@ -105,4 +108,5 @@ class pbis::params {
   $upgrade_package_file =
     "${upgrade_package}-${package_version}.linux.${::architecture}.${package_format}.sh"
   $repo_source = "${repository}/${repo_base}/${repo_class}.${repo_ext}"
+  notice("using repo_srouce: ${repo_source}")
 }

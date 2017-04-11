@@ -45,7 +45,7 @@ class pbis (
     exec { 'install pbis':
       command => "${pbis::params::repo_install} ${package}",
       path => ['/usr/bin', '/usr/sbin', '/bin'],
-      unless => "grep -ci '${pbis::params::version}.${pbis::params::version_build}' /opt/pbis/data/VERSION",
+      unless => "grep -ci '${pbis::params::version}.${pbis::params::version_build}' ${version_file}",
       logoutput => 'on_failure',
       timeout => 600,
     }
