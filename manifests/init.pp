@@ -38,12 +38,14 @@ class pbis (
       command => $pbis::params::repo_refresh,
       path => ['/usr/bin', '/usr/sbin', '/bin'],
       unless => "${pbis::params::repo_search} | grep '${pbis::params::version}.${pbis::params::version_qfe}' -ci",
+      logoutput => 'on_failure',
     } ->
     # SELinux relabel can take a long time, give the install literally 10 minutes to complete
     exec { 'install pbis':
       command => "${pbis::params::repo_install} ${package}",
       path => ['/usr/bin', '/usr/sbin', '/bin'],
       unless => "grep -ci '${pbis::params::version}.${pbis::params::version_build}' /opt/pbis/data/VERSION",
+      logoutput => 'on_failure',
       timeout => 600,
     }
   }
@@ -58,6 +60,7 @@ class pbis (
       command => "/bin/sh /tmp/${package_file} install",
       path    => ['/usr/bin', '/usr/sbin', '/bin'],
       unless => "${pbis::params::repo_search} | grep '${pbis::params::version}.${pbis::params::version_qfe}' -ci",
+      logoutput => 'on_failure',
     }
   }
 
@@ -99,6 +102,7 @@ class pbis (
   # Join the machine if it is not already on the domain.
   exec { 'join_domain':
     command => "/opt/pbis/bin/domainjoin-cli join ${options} ${ad_domain} ${bind_username} ${bind_password}",
+    logoutput => true,
     require => Service[$service_name],
     unless  => '/opt/pbis/bin/lsa ad-get-machine account 2> /dev/null | grep "NetBIOS Domain Name"',
   }
