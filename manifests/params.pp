@@ -33,8 +33,14 @@ class pbis::params {
   $skeleton_dirs         = '/etc/skel'
   $user_domain_prefix    = undef
 
+  # Added by EV 3/16/2016
+  # Adding PBIS parameter "SyncSystemTime" - can be either true or false (default)
+  # Set to 'false' to allow NTPD daemon sync the machine's time
+  $sync_system_time  = false
+
   # update-dns options
-  $dns_ipaddress         = undef
+  #$dns_ipaddress         = undef
+  $dns_ipaddress         = $ipaddress_ens32  # forces using ens32 address, so that multi-homed hosts don't register all addresses
   $dns_ipv6address       = undef
 
   if !( $::architecture in ['amd64', 'x86_64', 'i386', 'ppc64', 'ppc64le',] ) {

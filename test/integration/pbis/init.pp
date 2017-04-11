@@ -1,8 +1,8 @@
 class { 'pbis':
-  ad_domain          => 'ads.example.org',
-  bind_username      => 'admin',
-  bind_password      => 'password',
-  ou                 => 'ou=Computers,ou=Department,ou=Divison',
-  user_domain_prefix => 'ADS',
-  repository         => 'http://192.168.0.22'
+  ad_domain          => 'child1.lwtest.corp',
+  bind_username      => 'root-access',
+  bind_password      => 'RobHome1',
+  ou                 => 'Company/Branch/Computers',
+  user_domain_prefix => 'CHILD2',
+  repository         => 'http://repo.pbis.beyondtrust.com',
 }

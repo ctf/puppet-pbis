@@ -13,6 +13,7 @@ class pbis (
   $service_name          = $pbis::params::service_name,
   $assume_default_domain = $pbis::params::assume_default_domain,
   $create_home_dir       = $pbis::params::create_home_dir,
+  $sync_system_time      = $pbis::params::sync_system_time,
   $home_dir_prefix       = $pbis::params::home_dir_prefix,
   $home_dir_umask        = $pbis::params::home_dir_umask,
   $home_dir_template     = $pbis::params::home_dir_template,
@@ -56,14 +57,15 @@ class pbis (
     exec { 'install pbis':
       command => "/bin/sh /tmp/${package_file} install",
       path    => ['/usr/bin', '/usr/sbin', '/bin'],
-      unless  => "rpm -qa | grep pbis-open-${pbis::params::version}.${::architecture} -ci",
+      unless => "${pbis::params::repo_search} | grep '${pbis::params::version}.${pbis::params::version_qfe}' -ci",
     }
   }
 
   service { $service_name:
     ensure  => running,
     enable  => true,
-    require => Exec['install pbis'],
+    require => Exec['install pbis'],  #requiring this instead of the existence of the package allows controlling the version via puppet, rather than via "yum upgrade".
+    #require -> Package[$package],    # comment out the previous line, and uncomment this line, to simply base the requirement on "being installed" rather than a specific version
   }
   # Construct the domainjoin-cli options string
   # AssumeDefaultDomain and UserDomainPrefix are configured after joining
@@ -85,8 +87,14 @@ class pbis (
   else {
     $opt_disabled_modules = ''
   }
+  if $sync_system_time {
+    $opt_sync_system_time = ''
+  }
+  else {
+    $opt_sync_system_time = "--notimesync"
+  }
 
-  $options = "${opt_ou} ${opt_enabled_modules} ${opt_disabled_modules}"
+  $options = "${opt_ou} ${opt_enabled_modules} ${opt_disabled_modules} ${opt_sync_system_time}"
 
   # Join the machine if it is not already on the domain.
   exec { 'join_domain':
