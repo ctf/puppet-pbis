@@ -1,0 +1,9 @@
+/.project
+.kitchen/
+.kitchen.local.yml
+chefignore
+.tmp/
+.librarian/
+.idea/
+modules/
+

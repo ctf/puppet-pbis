@@ -1,0 +1,11 @@
+{
+  "name": "woodsbw-pbis",
+  "version": "1.0.0",
+  "author": "Ben Webber",
+  "summary": "PBIS",
+  "license": "GNU GPLv3",
+  "source": "https://github.com/woodsbw/puppet-pbis",
+  "project_page": "https://github.com/woodsbw/puppet-pbis",
+  "issues_url": "https://github.com/woodsbw/puppet-pbis",
+  "dependencies": [{ "name": "puppetlabs/concat","version_requirement": ">= 2.2.0"},{ "name": "maestrodev/wget","version_requirement": ">= 1.7.3"}]
+}

@@ -1,0 +1,12 @@
+FORGE
+  remote: https://forgeapi.puppetlabs.com
+  specs:
+    maestrodev-wget (1.7.3)
+    puppetlabs-concat (2.2.0)
+      puppetlabs-stdlib (< 5.0.0, >= 4.2.0)
+    puppetlabs-stdlib (4.12.0)
+
+DEPENDENCIES
+  maestrodev-wget (>= 1.7.3)
+  puppetlabs-concat (>= 2.2.0)
+

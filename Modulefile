@@ -1,7 +1,0 @@
-name    'puppet-pbis'
-version '0.3.0'
-author 'Ben Webber'
-license 'GNU GPLv3'
-summary 'Joins a node to an Active Directory domain using PowerBroker Identity Services Open Edition.'
-description 'This module provides a class to deploy and configure PBIS Open. Supports Debian, RedHat, and Suse.'
-project_page 'http://github.com/ctf/puppet-pbis'
